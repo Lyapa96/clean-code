@@ -1,23 +1,26 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Markdown
 {
     public class Md
     {
-        public static string Render(string formatMd)
+        public static string Render(string mdText)
         {
-            var lines = StringSeparator.DivideIntoMdTags(formatMd);
-            var html = new StringBuilder();
-
-            foreach (var line in lines)
+            if (mdText.ContainsMdTags())
             {
-                //выяснить с какого md тега начинается строка
-                //получить эквивалентый html тег
-                ITag tagHtml;
-                html.Append(tagHtml.WrapStringInTag(line));
+                var mdTokenizer = new MarkdownTokenizer(mdText);
+                var lines = mdTokenizer.ReadAllLines();
+                
+                var html = new StringBuilder();
+                foreach (var line in lines)
+                {
+                    var htmlLine = HtmlWrapper.WrapInTags(line);
+                    html.Append(htmlLine);
+                }
+                return Render(html.ToString());
             }
-
-            return html.ToString();
+            return mdText;
         }
     }
 }
