@@ -7,11 +7,13 @@ namespace Markdown
 {
     public interface IMdTag
     {
-        string NameTag { get; }
+        string TagName { get; }
 
         int FindTagEnd(string line,int position);
 
-        bool IsStartedPositionTag(string line, int position);
-        List<string> GetNestedTags { get; }
+        bool IsStartedPositionTagEnd(string line, int position);
+        bool IsStartedPositionTagStart(string line, int position);
+
+        List<IMdTag> GetNestedTags { get; }
     }
 }

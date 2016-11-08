@@ -57,7 +57,9 @@ namespace Markdown.Tests
         private static readonly TestCaseData[] IgnoreCase =
         {
             new TestCaseData(@"a \_b\_ c").Returns(new[] {@"a \_b\_ c"}),
-            new TestCaseData(@"_\_b\__a").Returns(new[] {@"<em>\_b\_</em>"})
+            new TestCaseData(@"_\_b\__a").Returns(new[] {@"<em>\_b\_</em>a"}),
+            new TestCaseData(@"\__b_").Returns(new[] {@"\_<em>b</em>"}),
+            new TestCaseData(@"__b\___").Returns(new[] {@"<strong>b\_</strong>"})
         };
 
         [TestCaseSource(nameof(IgnoreCase))]
@@ -65,7 +67,7 @@ namespace Markdown.Tests
         {
             var tokenizer = new MarkdownTokenizer(input);
 
-            var result = tokenizer.ReadLine();
+            var result = tokenizer.ReadAllLines();
 
             return new string[] {result};
         }
@@ -137,7 +139,8 @@ namespace Markdown.Tests
             new TestCaseData("_ __").Returns("<em> _</em>"),
             new TestCaseData("_ ").Returns("_ "),
             new TestCaseData("__ ").Returns("__ "),
-            new TestCaseData("__ _ _ ").Returns("__ <em> </em> ")
+            new TestCaseData("__ _a_ ").Returns("__ <em>a</em> "),
+            new TestCaseData("__ _ _ ").Returns("__ _ _ ")
         };
 
         [TestCaseSource(nameof(UnpairedTagsCase))]

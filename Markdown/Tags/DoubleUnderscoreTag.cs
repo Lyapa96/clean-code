@@ -5,24 +5,30 @@ namespace Markdown.Tags
 {
     public class DoubleUnderscoreTag : IMdTag
     {
-        public string NameTag => "__";
+        public string TagName => "__";
 
         public int FindTagEnd(string line, int position)
         {
-            
             while (true)
             {
                 position++;
-                if (position == line.Length - 1) return position +1;
-                if (IsStartedPositionTag(line,position)) return position+1;
+                if (position == line.Length - 1) return position + 1;
+                if (IsStartedPositionTagEnd(line, position)) return position + 1;
             }
         }
 
-        public bool IsStartedPositionTag(string line, int position)
+        public bool IsStartedPositionTagEnd(string line, int position)
         {
-            return line.Substring(position, 2).Equals("__") && TagHelper.IsNotTagShielded(line, position);
+            return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
+                   TagHelper.IsNotTagEscaped(line, position);
         }
 
-        public List<string> GetNestedTags => new List<string>() {"_"};
+        public bool IsStartedPositionTagStart(string line, int position)
+        {
+            return TagHelper.IsNotTagEscaped(line, position) &&
+                   TagHelper.IsSubstringEqualTag(line, position, TagName);
+        }
+
+        public List<IMdTag> GetNestedTags => new List<IMdTag>() {new UnderscoreTag()};
     }
 }

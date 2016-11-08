@@ -5,7 +5,7 @@ namespace Markdown.Tags
 {
     public class EmptyTag : IMdTag
     {
-        public string NameTag => "";
+        public string TagName => "";
 
         public int FindTagEnd(string line, int position)
         {
@@ -19,16 +19,23 @@ namespace Markdown.Tags
 
         public bool IsStartNewTag(string line, int position)
         {
-            return line[position].ToString().Equals("_")
-                   && TagHelper.IsNotTagShielded(line, position)
+            return TagHelper.IsSubstringEqualTag(line, position, "_")
+                   && TagHelper.IsNotTagEscaped(line, position)
                    && !line[position + 1].ToString().Equals(@" ");
         }
 
-        public bool IsStartedPositionTag(string line, int position)
+        public bool IsStartedPositionTagEnd(string line, int position)
         {
-            throw new NotImplementedException();
+            //этот метод никогда не должен вызываться для пустого тега
+            throw new NotImplementedException("Нет смысла искать конец пустого тега, его конец там где начинается новый");
         }
 
-        public List<string> GetNestedTags => new List<string>();
+        public bool IsStartedPositionTagStart(string line, int position)
+        {
+            //этот метод никогда не должен вызываться для пустого тега
+            throw new NotImplementedException("Нет смысла искать начало, пустой тег может начинаться в любом месте");
+        }
+
+        public List<IMdTag> GetNestedTags => new List<IMdTag>();
     }
 }

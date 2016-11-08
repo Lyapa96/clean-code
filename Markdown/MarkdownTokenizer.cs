@@ -15,17 +15,12 @@ namespace Markdown
         public int CurrentPosition { get; private set; }
         private int substringStartPosition;
 
-        private readonly Dictionary<string, IMdTag> mdInTag = new Dictionary<string, IMdTag>()
-        {
-            {"_", new UnderscoreTag()},
-            {"__", new DoubleUnderscoreTag()}
-        };
-
+        private readonly List<IMdTag> supportedMdTags = new List<IMdTag>() { new DoubleUnderscoreTag(), new UnderscoreTag() };
 
         public MarkdownTokenizer(string sourceString)
         {
             this.sourceString = sourceString;
-            currentMdTag = DetermineCurrentTag();
+            currentMdTag = TagHelper.DetermineCurrentTag(sourceString,CurrentPosition,supportedMdTags);
         }
 
 
@@ -38,15 +33,15 @@ namespace Markdown
 
             if (offset == sourceString.Length)
             {
-                return HtmlWrapper.WrapInTags(GetSubstring(), "");
+                return HtmlWrapper.WrapInTags(GetSubstring(), new EmptyTag().TagName);
             }
 
-            var tagName = currentMdTag.NameTag;
+            var tagName = currentMdTag.TagName;
 
             CurrentPosition++;
             if (CurrentPosition < sourceString.Length)
             {
-                currentMdTag = DetermineCurrentTag();
+                currentMdTag = TagHelper.DetermineCurrentTag(sourceString,CurrentPosition,supportedMdTags);
             }
 
             var htmlLine = GetSubstring();
@@ -74,19 +69,7 @@ namespace Markdown
             return offset;
         }
 
-        public IMdTag DetermineCurrentTag()
-        {
-            if (CurrentPosition < sourceString.Length - 1 && mdInTag.ContainsKey(sourceString.Substring(CurrentPosition, 2)))
-            {
-                return mdInTag[sourceString.Substring(CurrentPosition, 2)];
-            }
-            if (mdInTag.ContainsKey(sourceString[CurrentPosition].ToString()))
-            {
-                return mdInTag[sourceString[CurrentPosition].ToString()];
-            }
-            return new EmptyTag();
-        }
-
+       
         public string GetSubstring()
         {
             var substring = sourceString.Substring(substringStartPosition, CurrentPosition - substringStartPosition);
@@ -100,34 +83,34 @@ namespace Markdown
             var newString = sourceString;
             Dictionary<string, int> tagToPosition = new Dictionary<string, int>();
             var innerTags = currentMdTag.GetNestedTags;
-            CurrentPosition += currentMdTag.NameTag.Length;
+            CurrentPosition += currentMdTag.TagName.Length;
 
             for (int i = 0; i < innerTags.Count; i++)
             {
                 newString = WrapTag(tagToPosition, newString, innerTags[i]);
             }
             
-            CurrentPosition -= currentMdTag.NameTag.Length; 
+            CurrentPosition -= currentMdTag.TagName.Length; 
             return newString;
         }
 
 
-        public string WrapTag(Dictionary<string, int> tagToPosition, string newString, string innerTag)
+        public string WrapTag(Dictionary<string, int> tagToPosition, string newString, IMdTag innerTag)
         {
-            for (int i = CurrentPosition; i < newString.Length+1-currentMdTag.NameTag.Length; i++)
+            for (int i = CurrentPosition; i < newString.Length+1-currentMdTag.TagName.Length; i++)
             {
-                if (tagToPosition.Count == 0 && currentMdTag.IsStartedPositionTag(newString,i))
+                if (tagToPosition.Count == 0 && currentMdTag.IsStartedPositionTagEnd(newString,i))
                 {
                     return newString;
                 }
-                if (newString.Substring(i,innerTag.Length) == innerTag && tagToPosition.Count == 0)
+                if (tagToPosition.Count == 0 && innerTag.IsStartedPositionTagStart(newString,i))
                 {
-                    tagToPosition.Add(innerTag, i);
+                    tagToPosition.Add(innerTag.TagName, i);
                 }
-                else if (newString.Substring(i, innerTag.Length) == innerTag)
+                else if (innerTag.IsStartedPositionTagEnd(newString,i))
                 {
-                    var html = HtmlWrapper.WrapInTags(newString, innerTag, tagToPosition[innerTag], i);
-                    tagToPosition.Remove(innerTag);
+                    var html = HtmlWrapper.WrapInTags(newString, innerTag.TagName, tagToPosition[innerTag.TagName], i);
+                    tagToPosition.Remove(innerTag.TagName);
                     return WrapTag(tagToPosition, html, innerTag);
                 }
             }
