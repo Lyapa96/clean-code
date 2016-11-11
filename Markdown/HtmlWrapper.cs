@@ -14,6 +14,7 @@ namespace Markdown
         {
             {"__", new HtmlTags("<strong>", @"</strong>")},
             {"_", new HtmlTags("<em>", @"</em>")},
+            {"#", new HtmlTags("<em>", @"</em>")},
             {"", new HtmlTags("", "")}
         };
 
@@ -30,7 +31,6 @@ namespace Markdown
             var mdContent = words.Substring(start, end + tag.Length - start);
 
             var html = WrapInTags(mdContent, tag);
-
             return beforeContent + html + afterContent;
         }
 

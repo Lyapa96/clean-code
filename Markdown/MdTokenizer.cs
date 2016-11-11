@@ -18,7 +18,8 @@ namespace Markdown
         private readonly List<IMdTag> supportedMdTags = new List<IMdTag>()
         {
             new DoubleUnderscoreTag(),
-            new UnderscoreTag()
+            new UnderscoreTag(),
+            new SharpTag(),
         };
 
         public MdTokenizer(string sourceString)
@@ -48,27 +49,41 @@ namespace Markdown
             return mdNode;
         }
 
-
         public MdNode GetMdNode()
         {
             if (currentMdTag.GetNestedTags.Count != 0)
             {
                 return GetMdNodeWithInnerNodes();
             }
+
             var offset = FindPositionTagEnd();
             currentPosition = offset;
 
             if (offset == sourceString.Length)
-            { 
+            {
                 var emptyTag = new EmptyTag();
-                return new MdNode(GetSubstring(emptyTag.TagName), emptyTag);
+                return new MdNode(GetSubstringWithoutMdTags(emptyTag.TagName), emptyTag);
             }
 
             var previousTag = currentMdTag;
             UpdateCurrentTag();
 
-            var context = GetSubstring(previousTag.TagName);
+            var context = GetSubstringWithoutMdTags(previousTag.TagName);
             return new MdNode(context, previousTag);
+        }
+
+        private MdNode GetMdNodeWithInnerNodes()
+        {
+            var start = currentPosition;
+            var mdNodeWithInnerNodes = GetInnerNodes();
+            substringStartPosition = currentPosition;
+            if (IsTagСorrectlyClosed(start))
+            {
+                mdNodeWithInnerNodes.MdTag = currentMdTag;
+                currentMdTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, supportedMdTags);
+                return mdNodeWithInnerNodes;
+            }
+            return CreateRightMdNode(mdNodeWithInnerNodes);
         }
 
         private MdNode GetInnerNodes()
@@ -101,13 +116,13 @@ namespace Markdown
             }
             if (tagToPosition.Count != 0)
             {
-                AddNotClosedInnerTag(tagToPosition, innerTag,mdNode);               
+                AddNotClosedInnerTag(tagToPosition, innerTag, mdNode);
             }
             currentPosition = sourceString.Length;
             return mdNode;
         }
 
-        private void AddNotClosedInnerTag(Dictionary<string, int> tagToPosition,IMdTag innerTag,MdNode mdNode)
+        private void AddNotClosedInnerTag(Dictionary<string, int> tagToPosition, IMdTag innerTag, MdNode mdNode)
         {
             var lenght = sourceString.Length - tagToPosition[innerTag.TagName];
             mdNode.InnerMdNodes.Add(new MdNode(sourceString.Substring(tagToPosition[innerTag.TagName], lenght),
@@ -122,9 +137,24 @@ namespace Markdown
             if (innerTag is EmptyTag)
             {
                 lenght++;
-            }           
+            }
             mdNode.InnerMdNodes.Add(new MdNode(sourceString.Substring(start, lenght), innerTag));
             currentPosition = position + lenghtTag;
+        }
+
+        private bool IsTagСorrectlyClosed(int start)
+        {
+            return start != currentPosition - currentMdTag.TagName.Length &&
+                   currentMdTag.IsStartedPositionTagEnd(sourceString, currentPosition - currentMdTag.TagName.Length);
+        }
+
+        private MdNode CreateRightMdNode(MdNode mdNodeWithInnerNodes)
+        {
+            var innerNodes = mdNodeWithInnerNodes.InnerMdNodes;
+            innerNodes.Reverse();
+            innerNodes.Add(new MdNode(currentMdTag.TagName, new EmptyTag()));
+            innerNodes.Reverse();
+            return new MdNode(new EmptyTag()) {InnerMdNodes = innerNodes};
         }
 
         private int FindPositionTagEnd()
@@ -138,44 +168,6 @@ namespace Markdown
             return offset;
         }
 
-        private string GetSubstring(string oldTagName)
-        {
-            var substring = sourceString.Substring(substringStartPosition + oldTagName.Length,
-                currentPosition - substringStartPosition - 2 * oldTagName.Length);
-            substringStartPosition = currentPosition;
-            return substring;
-        }
-
-
-        private MdNode CreateRightMdNode(MdNode mdNodeWithInnerNodes)
-        {
-            var innerNodes = mdNodeWithInnerNodes.InnerMdNodes;
-            innerNodes.Reverse();
-            innerNodes.Add(new MdNode(currentMdTag.TagName, new EmptyTag()));
-            innerNodes.Reverse();
-            return new MdNode(new EmptyTag()) {InnerMdNodes = innerNodes};
-        }
-
-        private bool IsTagСorrectlyClosed(int start)
-        {
-            return start != currentPosition - currentMdTag.TagName.Length &&
-                   currentMdTag.IsStartedPositionTagEnd(sourceString, currentPosition - currentMdTag.TagName.Length);
-        }
-
-        private MdNode GetMdNodeWithInnerNodes()
-        {
-            var start = currentPosition;
-            var mdNodeWithInnerNodes = GetInnerNodes();
-            substringStartPosition = currentPosition;
-            if (IsTagСorrectlyClosed(start))
-            {
-                mdNodeWithInnerNodes.MdTag = currentMdTag;
-                currentMdTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, supportedMdTags);
-                return mdNodeWithInnerNodes;
-            }
-            return CreateRightMdNode(mdNodeWithInnerNodes);
-        }
-
         private void UpdateCurrentTag()
         {
             currentPosition++;
@@ -183,6 +175,14 @@ namespace Markdown
             {
                 currentMdTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, supportedMdTags);
             }
+        }
+
+        private string GetSubstringWithoutMdTags(string oldTagName)
+        {
+            var substring = sourceString.Substring(substringStartPosition + oldTagName.Length,
+                currentPosition - substringStartPosition - 2*oldTagName.Length);
+            substringStartPosition = currentPosition;
+            return substring;
         }
     }
 }

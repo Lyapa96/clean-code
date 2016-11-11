@@ -18,7 +18,9 @@ namespace Markdown.Tests
         private static readonly TestCaseData[] TwoWordsCaseMd =
         {
             new TestCaseData("a _b_").Returns("a <em>b</em>"),
+            new TestCaseData("a #b#").Returns("a <em>b</em>"),
             new TestCaseData("_a__b_").Returns("<em>a</em><em>b</em>"),
+            new TestCaseData("#a##b#").Returns("<em>a</em><em>b</em>"),
             new TestCaseData("a __b__").Returns("a <strong>b</strong>"),
             new TestCaseData("__a__b").Returns("<strong>a</strong>b")
         };

@@ -120,6 +120,5 @@ namespace Markdown
             }
             return newString;
         }
-
     }
 }

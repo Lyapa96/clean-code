@@ -8,7 +8,7 @@ namespace Markdown
         public readonly string Context;
         public IMdTag MdTag { get; set; }
 
-        public MdNode(string context,IMdTag mdTag)
+        public MdNode(string context, IMdTag mdTag)
         {
             Context = context;
             MdTag = mdTag;
