@@ -28,7 +28,6 @@ namespace Markdown
         }
 
 
-
         public string GetHtmlText()
         {
             var htmlText = new StringBuilder();
@@ -39,7 +38,16 @@ namespace Markdown
             return htmlText.ToString();
         }
 
-        
+        public MdNode GetMdTree()
+        {
+            var mdNode = new MdNode(new EmptyTag());
+            while (currentPosition < sourceString.Length)
+            {
+                mdNode.InnerMdNodes.Add(GetMdNode());
+            }
+            return mdNode;
+        }
+
 
         public MdNode GetMdNode()
         {
@@ -83,30 +91,40 @@ namespace Markdown
                 if (tagToPosition.Count == 0)
                 {
                     innerTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, tags);
-                    tagToPosition.Add(innerTag.TagName, i);
+                    tagToPosition.Add(innerTag.TagName, currentPosition);
                 }
                 if (innerTag.IsStartedPositionTagEnd(sourceString, i))
                 {
-                    var start = tagToPosition[innerTag.TagName] + innerTag.TagName.Length;
-                    var s = (innerTag.TagName.Length == 0) ? 1 : innerTag.TagName.Length;
-                    var lenght = i - start;
-                    if (innerTag is EmptyTag)
-                    {
-                        lenght++;
-                    }
+                    AddInnerMdNode(tagToPosition, innerTag, i, mdNode);
                     tagToPosition.Remove(innerTag.TagName);
-                    mdNode.InnerMdNodes.Add(new MdNode(sourceString.Substring(start, lenght), innerTag));
-                    currentPosition = i + s;
                 }
             }
             if (tagToPosition.Count != 0)
             {
-                var lenght = sourceString.Length - tagToPosition[innerTag.TagName];
-                mdNode.InnerMdNodes.Add(new MdNode(sourceString.Substring(tagToPosition[innerTag.TagName], lenght),
-                    new EmptyTag()));
+                AddNotClosedInnerTag(tagToPosition, innerTag,mdNode);               
             }
             currentPosition = sourceString.Length;
             return mdNode;
+        }
+
+        private void AddNotClosedInnerTag(Dictionary<string, int> tagToPosition,IMdTag innerTag,MdNode mdNode)
+        {
+            var lenght = sourceString.Length - tagToPosition[innerTag.TagName];
+            mdNode.InnerMdNodes.Add(new MdNode(sourceString.Substring(tagToPosition[innerTag.TagName], lenght),
+                new EmptyTag()));
+        }
+
+        private void AddInnerMdNode(Dictionary<string, int> tagToPosition, IMdTag innerTag, int position, MdNode mdNode)
+        {
+            var start = tagToPosition[innerTag.TagName] + innerTag.TagName.Length;
+            var lenghtTag = (innerTag.TagName.Length == 0) ? 1 : innerTag.TagName.Length;
+            var lenght = position - start;
+            if (innerTag is EmptyTag)
+            {
+                lenght++;
+            }           
+            mdNode.InnerMdNodes.Add(new MdNode(sourceString.Substring(start, lenght), innerTag));
+            currentPosition = position + lenghtTag;
         }
 
         private int FindPositionTagEnd()
