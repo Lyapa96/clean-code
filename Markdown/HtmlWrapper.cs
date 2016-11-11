@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Markdown.Tags;
 using NUnit.Framework.Constraints;
+using NUnit.Framework.Internal.Execution;
 
 namespace Markdown
 {
     public class HtmlWrapper
     {
-        public static Dictionary<string,HtmlTags> MdToHtml = new Dictionary<string, HtmlTags>()
+        public static Dictionary<string, HtmlTags> MdToHtml = new Dictionary<string, HtmlTags>()
         {
-            {"__", new HtmlTags("<strong>",@"</strong>")},
-            {"_", new HtmlTags("<em>",@"</em>")},
-            {"", new HtmlTags("","")}
+            {"__", new HtmlTags("<strong>", @"</strong>")},
+            {"_", new HtmlTags("<em>", @"</em>")},
+            {"", new HtmlTags("", "")}
         };
-
 
         public static string WrapInTags(string words, string tag)
         {
-            return $"{MdToHtml[tag].StartTag}{words.Substring(tag.Length,words.Length-2*tag.Length)}{MdToHtml[tag].EndTag}";
+            var htmlTag = MdToHtml[tag];
+            return $"{htmlTag.StartTag}{GetStringWithoutMdTag(words, tag)}{htmlTag.EndTag}";
         }
-
 
         public static string WrapInTags(string words, string tag, int start, int end)
         {
@@ -29,19 +31,33 @@ namespace Markdown
 
             var html = WrapInTags(mdContent, tag);
 
-            return beforeContent+html+afterContent;
+            return beforeContent + html + afterContent;
         }
-    }
 
-    public class HtmlTags
-    {
-        public readonly string StartTag;
-        public readonly string EndTag;
-
-        public HtmlTags(string startTag, string endTag)
+        public static string WrapInTags(MdNode mdNode)
         {
-            StartTag = startTag;
-            EndTag = endTag;
+            var result = new StringBuilder();
+            if (!mdNode.InnerMdNodes.Any())
+            {
+                return WrapMdNode(mdNode.Context, mdNode.MdTag.TagName);
+            }
+
+            foreach (var innerNode in mdNode.InnerMdNodes)
+            {
+                result.Append(WrapMdNode(innerNode.Context, innerNode.MdTag.TagName));
+            }
+            return WrapMdNode(result.ToString(), mdNode.MdTag.TagName);
+        }
+
+        public static string WrapMdNode(string words, string tag)
+        {
+            var htmlTag = MdToHtml[tag];
+            return $"{htmlTag.StartTag}{words}{htmlTag.EndTag}";
+        }
+
+        private static string GetStringWithoutMdTag(string words, string tag)
+        {
+            return words.Substring(tag.Length, words.Length - 2*tag.Length);
         }
     }
 }

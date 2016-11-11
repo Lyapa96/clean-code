@@ -15,12 +15,16 @@ namespace Markdown
         public int CurrentPosition { get; private set; }
         private int substringStartPosition;
 
-        private readonly List<IMdTag> supportedMdTags = new List<IMdTag>() { new DoubleUnderscoreTag(), new UnderscoreTag() };
+        private readonly List<IMdTag> supportedMdTags = new List<IMdTag>()
+        {
+            new DoubleUnderscoreTag(),
+            new UnderscoreTag()
+        };
 
         public MarkdownTokenizer(string sourceString)
         {
             this.sourceString = sourceString;
-            currentMdTag = TagHelper.DetermineCurrentTag(sourceString,CurrentPosition,supportedMdTags);
+            currentMdTag = TagHelper.DetermineCurrentTag(sourceString, CurrentPosition, supportedMdTags);
         }
 
 
@@ -41,7 +45,7 @@ namespace Markdown
             CurrentPosition++;
             if (CurrentPosition < sourceString.Length)
             {
-                currentMdTag = TagHelper.DetermineCurrentTag(sourceString,CurrentPosition,supportedMdTags);
+                currentMdTag = TagHelper.DetermineCurrentTag(sourceString, CurrentPosition, supportedMdTags);
             }
 
             var htmlLine = GetSubstring();
@@ -54,7 +58,7 @@ namespace Markdown
             while (CurrentPosition < sourceString.Length)
             {
                 htmlText.Append(ReadLine());
-            }           
+            }
             return htmlText.ToString();
         }
 
@@ -69,7 +73,7 @@ namespace Markdown
             return offset;
         }
 
-       
+
         public string GetSubstring()
         {
             var substring = sourceString.Substring(substringStartPosition, CurrentPosition - substringStartPosition);
@@ -89,25 +93,25 @@ namespace Markdown
             {
                 newString = WrapTag(tagToPosition, newString, innerTags[i]);
             }
-            
-            CurrentPosition -= currentMdTag.TagName.Length; 
+
+            CurrentPosition -= currentMdTag.TagName.Length;
             return newString;
         }
 
 
         public string WrapTag(Dictionary<string, int> tagToPosition, string newString, IMdTag innerTag)
         {
-            for (int i = CurrentPosition; i < newString.Length+1-currentMdTag.TagName.Length; i++)
+            for (int i = CurrentPosition; i < newString.Length + 1 - currentMdTag.TagName.Length; i++)
             {
-                if (tagToPosition.Count == 0 && currentMdTag.IsStartedPositionTagEnd(newString,i))
+                if (tagToPosition.Count == 0 && currentMdTag.IsStartedPositionTagEnd(newString, i))
                 {
                     return newString;
                 }
-                if (tagToPosition.Count == 0 && innerTag.IsStartedPositionTagStart(newString,i))
+                if (tagToPosition.Count == 0 && innerTag.IsStartedPositionTagStart(newString, i))
                 {
                     tagToPosition.Add(innerTag.TagName, i);
                 }
-                else if (innerTag.IsStartedPositionTagEnd(newString,i))
+                else if (innerTag.IsStartedPositionTagEnd(newString, i))
                 {
                     var html = HtmlWrapper.WrapInTags(newString, innerTag.TagName, tagToPosition[innerTag.TagName], i);
                     tagToPosition.Remove(innerTag.TagName);
@@ -116,5 +120,6 @@ namespace Markdown
             }
             return newString;
         }
+
     }
 }

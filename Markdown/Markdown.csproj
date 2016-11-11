@@ -47,16 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HtmlTags.cs" />
     <Compile Include="HtmlWrapper.cs" />
+    <Compile Include="MdNode.cs" />
+    <Compile Include="MdTokenizer.cs" />
     <Compile Include="Tags\IMdTag.cs" />
     <Compile Include="MarkdownTokenizer.cs" />
     <Compile Include="Tags\DoubleUnderscoreTag.cs" />
     <Compile Include="Tags\EmptyTag.cs" />
     <Compile Include="TagHelper.cs" />
     <Compile Include="Tags\UnderscoreTag.cs" />
-    <Compile Include="Tests\HtmlWrapper_should.cs" />
-    <Compile Include="Tests\MarkdownTokenizer_should.cs" />
-    <Compile Include="Tests\Markdown_should.cs" />
     <Compile Include="Md.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

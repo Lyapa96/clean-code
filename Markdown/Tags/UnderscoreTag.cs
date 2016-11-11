@@ -29,9 +29,11 @@ namespace Markdown.Tags
 
         public bool IsStartedPositionTagStart(string line, int position)
         {
+            if (position == line.Length - 1) return false;
             return TagHelper.IsNotTagEscaped(line, position) &&
                    TagHelper.IsSubstringEqualTag(line, position, TagName) &&
-                   !line[position + 1].ToString().Equals(@"_");
+                   !line[position + 1].ToString().Equals(@"_") &&
+                   !line[position + 1].ToString().Equals(@" ");
         }
 
 

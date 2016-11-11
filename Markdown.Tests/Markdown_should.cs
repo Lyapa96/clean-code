@@ -6,7 +6,8 @@ namespace Markdown.Tests
     {
         private static readonly TestCaseData[] StringMdCase =
         {
-            new TestCaseData("a _b_ c").Returns("a <em>b</em> c")
+            new TestCaseData("a _b_ c").Returns("a <em>b</em> c"),
+            new TestCaseData("__s _ss s__ _sdk l_").Returns("__s <em>ss s</em>_ <em>sdk l</em>")
         };
 
         [TestCaseSource(nameof(StringMdCase))]

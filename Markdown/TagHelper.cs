@@ -25,8 +25,6 @@ namespace Markdown
                     return mdTag;
             }
             return new EmptyTag();
-        }
-
-      
+        }      
     }
 }

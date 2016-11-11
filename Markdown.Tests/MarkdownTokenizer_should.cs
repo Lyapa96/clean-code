@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace Markdown.Tests
 {
@@ -15,7 +16,7 @@ namespace Markdown.Tests
 
 
         private static readonly TestCaseData[] TwoWordsCase =
-        {
+        {           
             new TestCaseData("a _b_").Returns(new[] {"a ", "<em>b</em>"}),
             new TestCaseData("_a__b_").Returns(new[] {"<em>a</em>", "<em>b</em>"}),
             new TestCaseData("a __b__").Returns(new[] {"a ", "<strong>b</strong>"}),
@@ -36,6 +37,7 @@ namespace Markdown.Tests
 
         private static readonly TestCaseData[] ThreeWordsCase =
         {
+            
             new TestCaseData("a _b_ c").Returns(new[] {"a ", "<em>b</em>", " c"}),
             new TestCaseData("a __b___c_").Returns(new[] {"a ", "<strong>b</strong>", "<em>c</em>"}),
             new TestCaseData("a _b___c__").Returns(new[] {"a ", "<em>b</em>", "<strong>c</strong>"})
@@ -102,7 +104,7 @@ namespace Markdown.Tests
             new TestCaseData(@"__a _b_ a _b_ a _b_ __").Returns(
                 "<strong>a <em>b</em> a <em>b</em> a <em>b</em> </strong>"),
             new TestCaseData(@"__a _b_ _b___").Returns("<strong>a <em>b</em> <em>b</em></strong>"),
-            new TestCaseData(@"_a __b__ a_").Returns("<em>a _</em>")
+            new TestCaseData(@"_a __b__ a_").Returns("<em>a _</em>"),
         };
 
         [TestCaseSource(nameof(NeatedTagsCase))]
@@ -136,11 +138,12 @@ namespace Markdown.Tests
 
         private static readonly TestCaseData[] UnpairedTagsCase =
         {
-            new TestCaseData("_ __").Returns("<em> _</em>"),
-            new TestCaseData("_ ").Returns("_ "),
+            new TestCaseData("_ __").Returns("_ "),
+            new TestCaseData("_ ").Returns("_ "),           
             new TestCaseData("__ ").Returns("__ "),
             new TestCaseData("__ _a_ ").Returns("__ <em>a</em> "),
-            new TestCaseData("__ _ _ ").Returns("__ _ _ ")
+            new TestCaseData("__ _ _ ").Returns("__ _ _ "),
+          
         };
 
         [TestCaseSource(nameof(UnpairedTagsCase))]

@@ -19,6 +19,10 @@ namespace Markdown.Tags
 
         public bool IsStartNewTag(string line, int position)
         {
+            if (position == line.Length - 1)
+            {
+                return false;
+            }
             return TagHelper.IsSubstringEqualTag(line, position, "_")
                    && TagHelper.IsNotTagEscaped(line, position)
                    && !line[position + 1].ToString().Equals(@" ");
@@ -26,12 +30,16 @@ namespace Markdown.Tags
 
         public bool IsStartedPositionTagEnd(string line, int position)
         {
+            if (++position >= line.Length) return true;
+            return (IsStartNewTag(line, position));
             //этот метод никогда не должен вызываться для пустого тега
             throw new NotImplementedException("Нет смысла искать конец пустого тега, его конец там где начинается новый");
         }
 
         public bool IsStartedPositionTagStart(string line, int position)
         {
+            return true;
+            
             //этот метод никогда не должен вызываться для пустого тега
             throw new NotImplementedException("Нет смысла искать начало, пустой тег может начинаться в любом месте");
         }

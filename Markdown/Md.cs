@@ -7,8 +7,8 @@ namespace Markdown
     {
         public static string Render(string mdText)
         {
-            var tokenizer = new MarkdownTokenizer(mdText);
-            return tokenizer.ReadAllLines();
+            var tokenizer = new MdTokenizer(mdText);
+            return tokenizer.GetHtmlText();
         }
     }
 }
