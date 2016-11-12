@@ -8,9 +8,9 @@ namespace Markdown
         public static string Render(string mdText)
         {
             var builder = new MdTreeBuilder(mdText);
-            var htmlWrapper = new HtmlWrapper();
-            var root = builder.BuildTree();
-            return htmlWrapper.WrapMdTree(root);
+            var htmlConverter = new HtmlConverter();
+            var tree = builder.BuildTree();
+            return htmlConverter.Convert(tree);
         }
     }
 }

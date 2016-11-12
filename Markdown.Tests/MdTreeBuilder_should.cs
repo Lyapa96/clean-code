@@ -21,9 +21,9 @@ namespace Markdown.Tests
         public void createMdNodeWithoutInnerTags(string input, MdNode expectedMdNode)
         {
             var builder = new MdTreeBuilder(input);
-            var root = builder.BuildTree();
+            var tree = builder.BuildTree();
 
-            root.InnerMdNodes[0].ShouldBeEquivalentTo(expectedMdNode);
+            tree.Root.InnerMdNodes[0].ShouldBeEquivalentTo(expectedMdNode);
         }
 
 
@@ -37,7 +37,7 @@ namespace Markdown.Tests
         public void createMdNodeWithInnerTag(string input, MdNode expectedInnerMdNode)
         {
             var builder = new MdTreeBuilder(input);
-            var mdNode = builder.BuildTree().InnerMdNodes[0];
+            var mdNode = builder.BuildTree().Root.InnerMdNodes[0];
 
             mdNode.InnerMdNodes.ShouldAllBeEquivalentTo(expectedInnerMdNode);
         }
@@ -61,9 +61,9 @@ namespace Markdown.Tests
         void createMdNodeWithInnerTags(string input, MdNode expectedInnerMdNode)
         {
             var builder = new MdTreeBuilder(input);
-            var mdNode = builder.BuildTree();
+            var tree = builder.BuildTree();
 
-            mdNode.InnerMdNodes.ShouldAllBeEquivalentTo(expectedInnerMdNode);
+            tree.Root.InnerMdNodes.ShouldAllBeEquivalentTo(expectedInnerMdNode);
         }
 
 

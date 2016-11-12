@@ -4,7 +4,7 @@ namespace Markdown.Tags
 {
     public class DoubleSharpTag : MdTag
     {
-        public DoubleSharpTag() : base("##", new List<MdTag>() {new SharpTag()})
+        public DoubleSharpTag() : base("##", new List<MdTag>())
         {
         }
 

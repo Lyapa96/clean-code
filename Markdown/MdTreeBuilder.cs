@@ -28,14 +28,14 @@ namespace Markdown
         }
 
 
-        public MdNode BuildTree()
+        public MdTree BuildTree()
         {
             var mdNode = new MdNode(new EmptyTag());
             while (currentPosition < sourceString.Length)
             {
                 mdNode.InnerMdNodes.Add(GetMdNode());
             }
-            return mdNode;
+            return new MdTree(mdNode);
         }
 
         private MdNode GetMdNode()

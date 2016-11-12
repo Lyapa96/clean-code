@@ -17,7 +17,7 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(StringCase))]
         public string wrapWordsInHtml(string words, string mdTag)
         {
-            var htmlWrapper = new HtmlWrapper();
+            var htmlWrapper = new HtmlConverter();
             return htmlWrapper.WrapInTags(words, mdTag);
         }
 
@@ -31,41 +31,44 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(StringStartEndCaseCase))]
         public string wrapWordsStartInHtml(string words, string mdTag)
         {
-            var htmlWrapper = new HtmlWrapper();
+            var htmlWrapper = new HtmlConverter();
             return htmlWrapper.WrapInTags(words, mdTag, 1, 3);
         }
 
 
         private static readonly TestCaseData[] MdNodeCase =
-       {
-            new TestCaseData(new MdNode("text",new DoubleUnderscoreTag())).Returns("<strong>text</strong>"),
-            new TestCaseData(new MdNode("text",new UnderscoreTag())).Returns("<em>text</em>"),
-            new TestCaseData(new MdNode("text",new EmptyTag())).Returns("text"),
+        {
+            new TestCaseData(new MdNode("text", new DoubleUnderscoreTag())).Returns("<strong>text</strong>"),
+            new TestCaseData(new MdNode("text", new UnderscoreTag())).Returns("<em>text</em>"),
+            new TestCaseData(new MdNode("text", new EmptyTag())).Returns("text"),
         };
 
 
         [TestCaseSource(nameof(MdNodeCase))]
         public string wrapMdNodeInHtml(MdNode mdNode)
         {
-            var htmlWrapper = new HtmlWrapper();
-            return htmlWrapper.WrapMdTree(mdNode);
+            var tree = new MdTree(mdNode);
+            var htmlConverter = new HtmlConverter();
+            return htmlConverter.Convert(tree);
         }
 
         private static readonly TestCaseData[] MdNodeInnerNodeCase =
-      {
-            new TestCaseData(new MdNode("",new DoubleUnderscoreTag())).Returns("<strong><em>a</em>text<em>b</em></strong>"),
+        {
+            new TestCaseData(new MdNode("", new DoubleUnderscoreTag())).Returns(
+                "<strong><em>a</em>text<em>b</em></strong>"),
         };
 
 
         [TestCaseSource(nameof(MdNodeInnerNodeCase))]
         public string wrapInnerMdNodeInHtml(MdNode mdNode)
         {
-            var htmlWrapper = new HtmlWrapper();
+             
+            var htmlConverter = new HtmlConverter();
             mdNode.InnerMdNodes.Add(new MdNode("a", new UnderscoreTag()));
             mdNode.InnerMdNodes.Add(new MdNode("text", new EmptyTag()));
             mdNode.InnerMdNodes.Add(new MdNode("b", new UnderscoreTag()));
-
-            return htmlWrapper.WrapMdTree(mdNode);
+            var tree = new MdTree(mdNode);
+            return htmlConverter.Convert(tree);
         }
     }
 }

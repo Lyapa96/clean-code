@@ -8,7 +8,7 @@ namespace Markdown
     public class MdNode
     {
         public List<MdNode> InnerMdNodes = new List<MdNode>();
-        public readonly string Context;
+        public string Context { get; }
         public MdTag MdTag { get; }
 
         public MdNode(string context, MdTag mdTag)

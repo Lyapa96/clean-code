@@ -4,20 +4,20 @@ namespace Markdown.Tests
 {
     public class Markdown_should
     {
-        private static readonly TestCaseData[] TwoWordsCaseMd =
+        private static readonly TestCaseData[] TwoWordsCase =
         {
             new TestCaseData("a _b_").Returns("a <em>b</em>"),
-            new TestCaseData("a #b#").Returns("a <em>b</em>"),
+            new TestCaseData("a #b#").Returns("a <h1>b</h1>"),
             new TestCaseData("_a__b_").Returns("<em>a</em><em>b</em>"),
-            new TestCaseData("#a##b#").Returns("<em>a</em><em>b</em>"),
+            new TestCaseData("#a##b#").Returns("<h1>a</h1><h1>b</h1>"),
             new TestCaseData("a __b__").Returns("a <strong>b</strong>"),
             new TestCaseData("__a__b").Returns("<strong>a</strong>b"),
-            new TestCaseData("a ##b##").Returns("a <strong>b</strong>"),
-            new TestCaseData("##a##b").Returns("<strong>a</strong>b")
+            new TestCaseData("a ##b##").Returns("a <h2>b</h2>"),
+            new TestCaseData("##a##b").Returns("<h2>a</h2>b")
         };
 
-        [TestCaseSource(nameof(TwoWordsCaseMd))]
-        public string MddivideTwoWords(string input)
+        [TestCaseSource(nameof(TwoWordsCase))]
+        public string divideTwoWords(string input)
         {
             return Md.Render(input);
         }
@@ -26,11 +26,11 @@ namespace Markdown.Tests
         private static readonly TestCaseData[] ThreeWordsCaseMd =
         {
             new TestCaseData("a _b_ c").Returns("a <em>b</em> c"),
-            new TestCaseData("a #b# c").Returns("a <em>b</em> c"),
-            new TestCaseData("a ##b##_c_").Returns("a <strong>b</strong><em>c</em>"),
+            new TestCaseData("a #b# c").Returns("a <h1>b</h1> c"),
+            new TestCaseData("a ##b##_c_").Returns("a <h2>b</h2><em>c</em>"),
             new TestCaseData("a __b___c_").Returns("a <strong>b</strong><em>c</em>"),
             new TestCaseData("a _b___c__").Returns("a <em>b</em><strong>c</strong>"),
-            new TestCaseData("a #b#__c__").Returns("a <em>b</em><strong>c</strong>")
+            new TestCaseData("a #b#__c__").Returns("a <h1>b</h1><strong>c</strong>")
         };
 
         [TestCaseSource(nameof(ThreeWordsCaseMd))]
