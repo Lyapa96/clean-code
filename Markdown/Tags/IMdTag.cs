@@ -11,9 +11,9 @@ namespace Markdown
 
         int FindTagEnd(string line,int position);
 
-        bool IsStartedPositionTagEnd(string line, int position);
         bool IsStartedPositionTagStart(string line, int position);
-
-        List<IMdTag> GetNestedTags { get; }
+        bool IsStartedPositionTagEnd(string line, int position);
+        
+        List<IMdTag> GetInnerTags { get; }        
     }
 }

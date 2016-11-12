@@ -17,7 +17,20 @@ namespace Markdown.Tags
             }
         }
 
-        public bool IsStartNewTag(string line, int position)
+        public bool IsStartedPositionTagStart(string line, int position)
+        {
+            return true;
+        }
+
+        public bool IsStartedPositionTagEnd(string line, int position)
+        {
+            if (++position >= line.Length) return true;
+            return (IsStartNewTag(line, position));
+        }
+
+        public List<IMdTag> GetInnerTags => new List<IMdTag>();
+
+        private bool IsStartNewTag(string line, int position)
         {
             if (position == line.Length - 1)
             {
@@ -29,17 +42,15 @@ namespace Markdown.Tags
                    && !line[position + 1].ToString().Equals(@" ");
         }
 
-        public bool IsStartedPositionTagEnd(string line, int position)
+
+        protected bool Equals(EmptyTag other)
         {
-            if (++position >= line.Length) return true;
-            return (IsStartNewTag(line, position));
+            return TagName.Equals(other.TagName);
         }
 
-        public bool IsStartedPositionTagStart(string line, int position)
+        public override int GetHashCode()
         {
-            return true;
+            return TagName.GetHashCode();
         }
-
-        public List<IMdTag> GetNestedTags => new List<IMdTag>();
     }
 }

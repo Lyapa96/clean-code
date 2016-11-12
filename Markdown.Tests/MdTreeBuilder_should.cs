@@ -1,18 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System.CodeDom;
+using System.Collections.Generic;
+using Markdown.Tags;
 using NUnit.Framework;
 
 namespace Markdown.Tests
 {
-    public class MdTokenizer_should
+    public class MdTreeBuilder_should
     {
-
         [Test]
-        public void MDreturnWordWithoutTags()
+        public void createMdNodeWithTag()
         {
-            var tokenizer = new MdTokenizer("a b c");
-            var result = tokenizer.GetMdNode();
+            var builder = new MdTreeBuilder("a b c");
+            var mdNode = builder.GetMdNode();
+            
+            var newMd = new MdNode("a b c",new EmptyTag());
 
-            Assert.That(result.Context, Is.EqualTo("a b c"));
+            Assert.True(mdNode.Equals(newMd));
+
+            Assert.That(mdNode.Context, Is.EqualTo("a b c"));
+            Assert.That(mdNode, Is.EqualTo(newMd));
         }
 
         private static readonly TestCaseData[] TwoWordsCaseMd =
@@ -28,7 +34,7 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(TwoWordsCaseMd))]
         public string MddivideTwoWords(string input)
         {
-            var tokenizer = new MdTokenizer(input);
+            var tokenizer = new MdTreeBuilder(input);
 
             var res = tokenizer.GetHtmlText();
 
@@ -46,7 +52,7 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(ThreeWordsCaseMd))]
         public string MddivideThreeWords(string input)
         {
-            var tokenizer = new MdTokenizer(input);
+            var tokenizer = new MdTreeBuilder(input);
 
             var res = tokenizer.GetHtmlText();
 
@@ -65,7 +71,7 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(IgnoreCase))]
         public string[] ignoreTagsInSlash(string input)
         {
-            var tokenizer = new MdTokenizer(input);
+            var tokenizer = new MdTreeBuilder(input);
 
             var result = tokenizer.GetHtmlText();
 
@@ -77,7 +83,7 @@ namespace Markdown.Tests
         public void skipTag_WhenSpaceAfterTag()
         {
             var input = "a_ a_ a";
-            var tokenizer = new MdTokenizer(input);
+            var tokenizer = new MdTreeBuilder(input);
 
             var answer = tokenizer.GetMdNode();
             Assert.That(answer.Context, Is.EqualTo(input));
@@ -88,7 +94,7 @@ namespace Markdown.Tests
         public void notCloseTag_WhenSpaceBeforeTag()
         {
             var input = "_b _c_";
-            var tokenizer = new MdTokenizer(input);
+            var tokenizer = new MdTreeBuilder(input);
 
             var answer = tokenizer.GetHtmlText();
             Assert.That(answer, Is.EqualTo("<em>b _c</em>"));
@@ -108,7 +114,7 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(MdNeatedTagsCase))]
         public string MdhandleNestedTags(string input)
         {
-            var tokenizer = new MdTokenizer(input);
+            var tokenizer = new MdTreeBuilder(input);
 
 
             return tokenizer.GetHtmlText();
@@ -126,7 +132,7 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(NumbersInTextCase))]
         public string doNotWrapTextWithNumbers(string input)
         {
-            var tokenizer = new MdTokenizer(input);
+            var tokenizer = new MdTreeBuilder(input);
 
             var result = tokenizer.GetHtmlText();
 
@@ -149,7 +155,7 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(UnpairedTagsCase))]
         public string handleUnpairedTags(string input)
         {
-            var tokenizer = new MdTokenizer(input);
+            var tokenizer = new MdTreeBuilder(input);
 
             var result = tokenizer.GetHtmlText();
 

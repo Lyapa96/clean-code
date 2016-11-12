@@ -17,18 +17,18 @@ namespace Markdown.Tags
             }
         }
 
-        public bool IsStartedPositionTagEnd(string line, int position)
-        {
-            return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
-                   TagHelper.IsNotTagEscaped(line, position);
-        }
-
         public bool IsStartedPositionTagStart(string line, int position)
         {
             return TagHelper.IsNotTagEscaped(line, position) &&
                    TagHelper.IsSubstringEqualTag(line, position, TagName);
         }
 
-        public List<IMdTag> GetNestedTags => new List<IMdTag>() {new UnderscoreTag()};
+        public bool IsStartedPositionTagEnd(string line, int position)
+        {
+            return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
+                   TagHelper.IsNotTagEscaped(line, position);
+        }
+
+        public List<IMdTag> GetInnerTags => new List<IMdTag>() {new UnderscoreTag()};
     }
 }

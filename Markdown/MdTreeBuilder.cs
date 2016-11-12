@@ -5,7 +5,7 @@ using Markdown.Tags;
 
 namespace Markdown
 {
-    public class MdTokenizer
+    public class MdTreeBuilder
     {
         public List<MdNode> MdNodes = new List<MdNode>();
 
@@ -22,7 +22,7 @@ namespace Markdown
             new SharpTag(),
         };
 
-        public MdTokenizer(string sourceString)
+        public MdTreeBuilder(string sourceString)
         {
             this.sourceString = sourceString;
             currentMdTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, supportedMdTags);
@@ -31,10 +31,11 @@ namespace Markdown
 
         public string GetHtmlText()
         {
+            var htmlWrapper = new HtmlWrapper();
             var htmlText = new StringBuilder();
             while (currentPosition < sourceString.Length)
             {
-                htmlText.Append(HtmlWrapper.WrapInTags(GetMdNode()));
+                htmlText.Append(htmlWrapper.WrapInTags(GetMdNode()));
             }
             return htmlText.ToString();
         }
@@ -51,7 +52,7 @@ namespace Markdown
 
         public MdNode GetMdNode()
         {
-            if (currentMdTag.GetNestedTags.Count != 0)
+            if (currentMdTag.GetInnerTags.Count != 0)
             {
                 return GetMdNodeWithInnerNodes();
             }
@@ -79,7 +80,6 @@ namespace Markdown
             substringStartPosition = currentPosition;
             if (IsTagСorrectlyClosed(start))
             {
-                mdNodeWithInnerNodes.MdTag = currentMdTag;
                 currentMdTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, supportedMdTags);
                 return mdNodeWithInnerNodes;
             }
@@ -89,7 +89,7 @@ namespace Markdown
         private MdNode GetInnerNodes()
         {
             var mdNode = new MdNode(currentMdTag);
-            var tags = currentMdTag.GetNestedTags;
+            var tags = currentMdTag.GetInnerTags;
 
             var tagToPosition = new Dictionary<string, int>();
             currentPosition += currentMdTag.TagName.Length;

@@ -10,7 +10,7 @@ namespace Markdown
 {
     public class HtmlWrapper
     {
-        public static Dictionary<string, HtmlTags> MdToHtml = new Dictionary<string, HtmlTags>()
+        private Dictionary<string, HtmlTags> MdToHtml = new Dictionary<string, HtmlTags>()
         {
             {"__", new HtmlTags("<strong>", @"</strong>")},
             {"_", new HtmlTags("<em>", @"</em>")},
@@ -18,13 +18,13 @@ namespace Markdown
             {"", new HtmlTags("", "")}
         };
 
-        public static string WrapInTags(string words, string tag)
+        public string WrapInTags(string words, string tag)
         {
             var htmlTag = MdToHtml[tag];
             return $"{htmlTag.StartTag}{GetStringWithoutMdTag(words, tag)}{htmlTag.EndTag}";
         }
 
-        public static string WrapInTags(string words, string tag, int start, int end)
+        public string WrapInTags(string words, string tag, int start, int end)
         {
             var beforeContent = words.Substring(0, start);
             var afterContent = words.Substring(end + tag.Length);
@@ -34,7 +34,7 @@ namespace Markdown
             return beforeContent + html + afterContent;
         }
 
-        public static string WrapInTags(MdNode mdNode)
+        public string WrapInTags(MdNode mdNode)
         {
             var result = new StringBuilder();
             if (!mdNode.InnerMdNodes.Any())
@@ -49,7 +49,7 @@ namespace Markdown
             return WrapMdNode(result.ToString(), mdNode.MdTag.TagName);
         }
 
-        public static string WrapMdNode(string words, string tag)
+        public string WrapMdNode(string words, string tag)
         {
             var htmlTag = MdToHtml[tag];
             return $"{htmlTag.StartTag}{words}{htmlTag.EndTag}";

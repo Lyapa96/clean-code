@@ -55,9 +55,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="HtmlWrapper_should.cs" />
-    <Compile Include="MarkdownTokenizer_should.cs" />
     <Compile Include="Markdown_should.cs" />
-    <Compile Include="MdTokenizer_should.cs" />
+    <Compile Include="MdTreeBuilder_should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

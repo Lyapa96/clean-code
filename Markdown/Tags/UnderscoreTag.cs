@@ -20,13 +20,6 @@ namespace Markdown.Tags
             }
         }
 
-        public bool IsStartedPositionTagEnd(string line, int position)
-        {
-            return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
-                   !line[position - 1].ToString().Equals(@" ") &&
-                   TagHelper.IsNotTagEscaped(line, position);
-        }
-
         public bool IsStartedPositionTagStart(string line, int position)
         {
             if (position == line.Length - 1) return false;
@@ -36,7 +29,13 @@ namespace Markdown.Tags
                    !line[position + 1].ToString().Equals(@" ");
         }
 
+        public bool IsStartedPositionTagEnd(string line, int position)
+        {
+            return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
+                   !line[position - 1].ToString().Equals(@" ") &&
+                   TagHelper.IsNotTagEscaped(line, position);
+        }
 
-        public List<IMdTag> GetNestedTags => new List<IMdTag>();
+        public List<IMdTag> GetInnerTags => new List<IMdTag>();
     }
 }

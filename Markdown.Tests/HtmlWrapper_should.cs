@@ -17,7 +17,8 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(StringCase))]
         public string wrapWordsInHtml(string words, string mdTag)
         {
-            return HtmlWrapper.WrapInTags(words, mdTag);
+            var htmlWrapper = new HtmlWrapper();
+            return htmlWrapper.WrapInTags(words, mdTag);
         }
 
 
@@ -30,7 +31,8 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(StringStartEndCaseCase))]
         public string wrapWordsStartInHtml(string words, string mdTag)
         {
-            return HtmlWrapper.WrapInTags(words, mdTag, 1, 3);
+            var htmlWrapper = new HtmlWrapper();
+            return htmlWrapper.WrapInTags(words, mdTag, 1, 3);
         }
 
 
@@ -45,7 +47,8 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(MdNodeCase))]
         public string wrapMdNodeInHtml(MdNode mdNode)
         {
-            return HtmlWrapper.WrapInTags(mdNode);
+            var htmlWrapper = new HtmlWrapper();
+            return htmlWrapper.WrapInTags(mdNode);
         }
 
         private static readonly TestCaseData[] MdNodeInnerNodeCase =
@@ -57,11 +60,12 @@ namespace Markdown.Tests
         [TestCaseSource(nameof(MdNodeInnerNodeCase))]
         public string wrapInnerMdNodeInHtml(MdNode mdNode)
         {
+            var htmlWrapper = new HtmlWrapper();
             mdNode.InnerMdNodes.Add(new MdNode("a", new UnderscoreTag()));
             mdNode.InnerMdNodes.Add(new MdNode("text", new EmptyTag()));
             mdNode.InnerMdNodes.Add(new MdNode("b", new UnderscoreTag()));
 
-            return HtmlWrapper.WrapInTags(mdNode);
+            return htmlWrapper.WrapInTags(mdNode);
         }
     }
 }
