@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using Markdown.Tags;
+﻿using Markdown.Tags;
 using NUnit.Framework;
 
 namespace Markdown.Tests

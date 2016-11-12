@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Markdown.Tags;
 
-namespace Markdown
+namespace Markdown.Tags
 {
     public class TagHelper
     {
