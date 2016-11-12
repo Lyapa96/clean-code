@@ -1,5 +1,6 @@
 ﻿using System.CodeDom;
 using System.Collections.Generic;
+using FluentAssertions;
 using Markdown.Tags;
 using NUnit.Framework;
 
@@ -7,159 +8,64 @@ namespace Markdown.Tests
 {
     public class MdTreeBuilder_should
     {
-        [Test]
-        public void createMdNodeWithTag()
+        private static readonly TestCaseData[] MdNodeWithoutInnerTagsCase =
         {
-            var builder = new MdTreeBuilder("a b c");
+            new TestCaseData("a b c", new MdNode("a b c", new EmptyTag())),
+            new TestCaseData("_a_", new MdNode("a", new UnderscoreTag())),
+            new TestCaseData("#a#", new MdNode("a", new SharpTag())),
+        };
+
+        [TestCaseSource(nameof(MdNodeWithoutInnerTagsCase))]
+        public void createMdNodeWithoutInnerTags(string input, MdNode expectedMdNode)
+        {
+            var builder = new MdTreeBuilder(input);
             var mdNode = builder.GetMdNode();
-            
-            var newMd = new MdNode("a b c",new EmptyTag());
 
-            Assert.True(mdNode.Equals(newMd));
-
-            Assert.That(mdNode.Context, Is.EqualTo("a b c"));
-            Assert.That(mdNode, Is.EqualTo(newMd));
+            Assert.That(mdNode, Is.EqualTo(expectedMdNode));
         }
 
-        private static readonly TestCaseData[] TwoWordsCaseMd =
+
+        private static readonly TestCaseData[] MdNodeWithInnerTagCase =
         {
-            new TestCaseData("a _b_").Returns("a <em>b</em>"),
-            new TestCaseData("a #b#").Returns("a <em>b</em>"),
-            new TestCaseData("_a__b_").Returns("<em>a</em><em>b</em>"),
-            new TestCaseData("#a##b#").Returns("<em>a</em><em>b</em>"),
-            new TestCaseData("a __b__").Returns("a <strong>b</strong>"),
-            new TestCaseData("__a__b").Returns("<strong>a</strong>b")
+            new TestCaseData("__a__", new MdNode("a", new EmptyTag())),
+            new TestCaseData("___abc___", new MdNode("abc", new UnderscoreTag())),
         };
 
-        [TestCaseSource(nameof(TwoWordsCaseMd))]
-        public string MddivideTwoWords(string input)
+        [TestCaseSource(nameof(MdNodeWithInnerTagCase))]
+        public void createMdNodeWithInnerTag(string input, MdNode expectedInnerMdNode)
         {
-            var tokenizer = new MdTreeBuilder(input);
+            var builder = new MdTreeBuilder(input);
+            var mdNode = builder.GetMdNode();
 
-            var res = tokenizer.GetHtmlText();
-
-            return res;
+            Assert.That(mdNode.InnerMdNodes[0], Is.EqualTo(expectedInnerMdNode));
         }
 
-
-        private static readonly TestCaseData[] ThreeWordsCaseMd =
+        private static readonly TestCaseData[] MdNodeWithInnerTagsCase =
         {
-           new TestCaseData("a _b_ c").Returns("a <em>b</em> c"),
-            new TestCaseData("a __b___c_").Returns("a <strong>b</strong><em>c</em>"),
-            new TestCaseData("a _b___c__").Returns("a <em>b</em><strong>c</strong>")
+            new TestCaseData("___abc_text_abc___",
+                new MdNode("", new DoubleUnderscoreTag())
+                {
+                    InnerMdNodes = new List<MdNode>()
+                    {
+                        new MdNode("abc",new UnderscoreTag()),
+                        new MdNode("text", new EmptyTag()),
+                        new MdNode("abc", new UnderscoreTag())
+                    }
+                })
         };
 
-        [TestCaseSource(nameof(ThreeWordsCaseMd))]
-        public string MddivideThreeWords(string input)
+        [TestCaseSource(nameof(MdNodeWithInnerTagsCase))]
+        public
+        void createMdNodeWithInnerTags(string input, MdNode expectedInnerMdNode)
         {
-            var tokenizer = new MdTreeBuilder(input);
-
-            var res = tokenizer.GetHtmlText();
-
-            return res;
-        }
+            var builder = new MdTreeBuilder(input);
+            var mdNode = builder.GetMdNode();
 
 
-        private static readonly TestCaseData[] IgnoreCase =
-        {
-            new TestCaseData(@"a \_b\_ c").Returns(new[] {@"a \_b\_ c"}),
-            new TestCaseData(@"_\_b\__a").Returns(new[] {@"<em>\_b\_</em>a"}),
-            new TestCaseData(@"\__b_").Returns(new[] {@"\_<em>b</em>"}),
-            new TestCaseData(@"__b\___").Returns(new[] {@"<strong>b\_</strong>"})
-        };
-
-        [TestCaseSource(nameof(IgnoreCase))]
-        public string[] ignoreTagsInSlash(string input)
-        {
-            var tokenizer = new MdTreeBuilder(input);
-
-            var result = tokenizer.GetHtmlText();
-
-            return new string[] { result };
-        }
-
-
-        [Test]
-        public void skipTag_WhenSpaceAfterTag()
-        {
-            var input = "a_ a_ a";
-            var tokenizer = new MdTreeBuilder(input);
-
-            var answer = tokenizer.GetMdNode();
-            Assert.That(answer.Context, Is.EqualTo(input));
-        }
-
-
-        [Test]
-        public void notCloseTag_WhenSpaceBeforeTag()
-        {
-            var input = "_b _c_";
-            var tokenizer = new MdTreeBuilder(input);
-
-            var answer = tokenizer.GetHtmlText();
-            Assert.That(answer, Is.EqualTo("<em>b _c</em>"));
-        }
-
-
-        private static readonly TestCaseData[] MdNeatedTagsCase =
-       {
-           new TestCaseData(@"__a _b_ __").Returns("<strong>a <em>b</em> </strong>"),
-            new TestCaseData(@"__a _b_ _b_ __").Returns("<strong>a <em>b</em> <em>b</em> </strong>"),
-            new TestCaseData(@"__a _b_ a _b_ a _b_ __").Returns(
-                "<strong>a <em>b</em> a <em>b</em> a <em>b</em> </strong>"),
-            new TestCaseData(@"__a _b_ _b___").Returns("<strong>a <em>b</em> <em>b</em></strong>"),
-            new TestCaseData(@"_a __b__ a_").Returns("<em>a _</em>b__ a_"),
-        };
-
-        [TestCaseSource(nameof(MdNeatedTagsCase))]
-        public string MdhandleNestedTags(string input)
-        {
-            var tokenizer = new MdTreeBuilder(input);
-
-
-            return tokenizer.GetHtmlText();
-        }
-
-
-        private static readonly TestCaseData[] NumbersInTextCase =
-       {
-            new TestCaseData("_123_").Returns("_123_"),
-            new TestCaseData("a_123_").Returns("a_123_"),
-            new TestCaseData("a123_b_").Returns("a123<em>b</em>"),
-            new TestCaseData("a123_b1_").Returns("a123_b1_"),
-        };
-
-        [TestCaseSource(nameof(NumbersInTextCase))]
-        public string doNotWrapTextWithNumbers(string input)
-        {
-            var tokenizer = new MdTreeBuilder(input);
-
-            var result = tokenizer.GetHtmlText();
-
-            return result;
-        }
-
-
-       private static readonly TestCaseData[] UnpairedTagsCase =
-       {
-            new TestCaseData("_a__").Returns("<em>a</em>_"),
-            new TestCaseData("_ __").Returns("_ __"),
-            new TestCaseData("_ ").Returns("_ "),
-            new TestCaseData("__ ").Returns("__ "),
-            new TestCaseData("__ _a_ ").Returns("__ <em>a</em> "),
-            new TestCaseData("__ _ _ ").Returns("__ _ _ "),
-            new TestCaseData(@"__ a_").Returns("__ a_"),
-            new TestCaseData(@"__ _a_ _b").Returns("__ <em>a</em> _b")
-        };
-
-        [TestCaseSource(nameof(UnpairedTagsCase))]
-        public string handleUnpairedTags(string input)
-        {
-            var tokenizer = new MdTreeBuilder(input);
-
-            var result = tokenizer.GetHtmlText();
-
-            return result;
+            mdNode.InnerMdNodes.ShouldBeEquivalentTo
+                (
+                    expectedInnerMdNode
+                );
         }
     }
 }

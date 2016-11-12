@@ -5,10 +5,12 @@ namespace Markdown
 {
     public class TagHelper
     {
+        private const string Backslash = @"\";
+
         public static bool IsNotTagEscaped(string text, int position)
         {
             if (position == 0) return true;
-            return !text[position - 1].ToString().Equals(@"\");
+            return !text[position - 1].ToString().Equals(Backslash);
         }
 
         public static bool IsSubstringEqualTag(string line, int position, string tagname)
@@ -17,7 +19,7 @@ namespace Markdown
             return line.Substring(position, tagname.Length).Equals(tagname);
         }
 
-        public static IMdTag DetermineCurrentTag(string line, int position, List<IMdTag> mdTags)
+        public static MdTag DetermineCurrentTag(string line, int position, List<MdTag> mdTags)
         {
             foreach (var mdTag in mdTags)
             {

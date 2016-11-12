@@ -3,11 +3,13 @@ using System.Collections.Generic;
 
 namespace Markdown.Tags
 {
-    public class EmptyTag : IMdTag
+    public class EmptyTag : MdTag
     {
-        public string TagName => "";
+        public EmptyTag() : base("", new List<MdTag>())
+        {
+        }
 
-        public int FindTagEnd(string line, int position)
+        public override int FindTagEnd(string line, int position)
         {
             while (true)
             {
@@ -17,18 +19,16 @@ namespace Markdown.Tags
             }
         }
 
-        public bool IsStartedPositionTagStart(string line, int position)
+        public override bool IsStartedPositionTagStart(string line, int position)
         {
             return true;
         }
 
-        public bool IsStartedPositionTagEnd(string line, int position)
+        public override bool IsStartedPositionTagEnd(string line, int position)
         {
             if (++position >= line.Length) return true;
             return (IsStartNewTag(line, position));
         }
-
-        public List<IMdTag> GetInnerTags => new List<IMdTag>();
 
         private bool IsStartNewTag(string line, int position)
         {
@@ -43,14 +43,20 @@ namespace Markdown.Tags
         }
 
 
-        protected bool Equals(EmptyTag other)
-        {
-            return TagName.Equals(other.TagName);
-        }
+        //public override bool Equals(object obj)
+        //{
+        //    if (obj == null)
+        //    {
+        //        return false;
+        //    }
 
-        public override int GetHashCode()
-        {
-            return TagName.GetHashCode();
-        }
+        //    var other = obj as EmptyTag;
+        //    return TagName.Equals(other.TagName);
+        //}
+
+        //public override int GetHashCode()
+        //{
+        //    return TagName.GetHashCode();
+        //}
     }
 }

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 
 namespace Markdown.Tags
 {
-    public class DoubleUnderscoreTag : IMdTag
+    public class DoubleUnderscoreTag : MdTag
     {
-        public string TagName => "__";
+        public DoubleUnderscoreTag() : base("__", new List<MdTag>() { new UnderscoreTag() })
+        {
+        }
 
-        public int FindTagEnd(string line, int position)
+        public override int FindTagEnd(string line, int position)
         {
             while (true)
             {
@@ -17,18 +19,19 @@ namespace Markdown.Tags
             }
         }
 
-        public bool IsStartedPositionTagStart(string line, int position)
+        public override bool IsStartedPositionTagStart(string line, int position)
         {
             return TagHelper.IsNotTagEscaped(line, position) &&
                    TagHelper.IsSubstringEqualTag(line, position, TagName);
         }
 
-        public bool IsStartedPositionTagEnd(string line, int position)
+        public override bool IsStartedPositionTagEnd(string line, int position)
         {
             return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
                    TagHelper.IsNotTagEscaped(line, position);
         }
 
-        public List<IMdTag> GetInnerTags => new List<IMdTag>() {new UnderscoreTag()};
+        
+
     }
 }

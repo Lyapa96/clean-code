@@ -3,11 +3,13 @@ using System.Collections.Generic;
 
 namespace Markdown.Tags
 {
-    public class UnderscoreTag : IMdTag
+    public class UnderscoreTag : MdTag
     {
-        public string TagName => "_";
+        public UnderscoreTag() : base("_", new List<MdTag>())
+        {
+        }
 
-        public int FindTagEnd(string line, int position)
+        public override int FindTagEnd(string line, int position)
         {
             var start = position;
             while (true)
@@ -20,7 +22,7 @@ namespace Markdown.Tags
             }
         }
 
-        public bool IsStartedPositionTagStart(string line, int position)
+        public override bool IsStartedPositionTagStart(string line, int position)
         {
             if (position == line.Length - 1) return false;
             return TagHelper.IsNotTagEscaped(line, position) &&
@@ -29,13 +31,11 @@ namespace Markdown.Tags
                    !line[position + 1].ToString().Equals(@" ");
         }
 
-        public bool IsStartedPositionTagEnd(string line, int position)
+        public override bool IsStartedPositionTagEnd(string line, int position)
         {
             return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
                    !line[position - 1].ToString().Equals(@" ") &&
                    TagHelper.IsNotTagEscaped(line, position);
         }
-
-        public List<IMdTag> GetInnerTags => new List<IMdTag>();
     }
 }
