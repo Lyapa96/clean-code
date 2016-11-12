@@ -23,7 +23,6 @@ namespace Markdown
             Context = "";
         }
 
-
         public override bool Equals(object obj)
         {
             var other = obj as MdNode;
@@ -31,7 +30,6 @@ namespace Markdown
             return Context.Equals(other.Context) && Equals(MdTag, other.MdTag) &&
                    !InnerMdNodes.Except(other.InnerMdNodes).Any();
         }
-
 
         public override int GetHashCode()
         {

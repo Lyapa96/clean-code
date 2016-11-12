@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using Markdown.Tags;
+
 
 namespace Markdown
 {
-    public class HtmlConverter: IMdTreeConverter<string>
+    public class HtmlConverter : IMdTreeConverter<string>
     {
         private readonly Dictionary<string, HtmlTags> mdToHtml = new Dictionary<string, HtmlTags>()
         {
@@ -17,21 +15,11 @@ namespace Markdown
             {"", new HtmlTags("", "")}
         };
 
-        //public string WrapInTags(string words, string tag)
-        //{
-        //    var htmlTag = mdToHtml[tag];
-        //    return $"{htmlTag.StartTag}{GetStringWithoutMdTag(words, tag)}{htmlTag.EndTag}";
-        //}
-
-        //public string WrapInTags(string words, string tag, int start, int end)
-        //{
-        //    var beforeContent = words.Substring(0, start);
-        //    var afterContent = words.Substring(end + tag.Length);
-        //    var mdContent = words.Substring(start, end + tag.Length - start);
-
-        //    var html = WrapInTags(mdContent, tag);
-        //    return beforeContent + html + afterContent;
-        //}
+        public string Convert(MdTree tree)
+        {
+            var root = tree.Root;
+            return WrapMdNode(root);
+        }
 
         private string WrapMdNode(MdNode mdNode)
         {
@@ -50,17 +38,6 @@ namespace Markdown
             var htmlTag = mdToHtml[tag];
             return $"{htmlTag.StartTag}{words}{htmlTag.EndTag}";
         }
-
-        private static string GetStringWithoutMdTag(string words, string tag)
-        {
-            return words.Substring(tag.Length, words.Length - 2*tag.Length);
-        }
-
-
-        public string Convert(MdTree tree)
-        {
-            var root = tree.Root;
-            return WrapMdNode(root);
-        }
+       
     }
 }

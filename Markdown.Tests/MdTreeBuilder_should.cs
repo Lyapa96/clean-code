@@ -49,7 +49,7 @@ namespace Markdown.Tests
                 {
                     InnerMdNodes = new List<MdNode>()
                     {
-                        new MdNode("abc",new UnderscoreTag()),
+                        new MdNode("abc", new UnderscoreTag()),
                         new MdNode("text", new EmptyTag()),
                         new MdNode("abc", new UnderscoreTag())
                     }
@@ -82,15 +82,14 @@ namespace Markdown.Tests
         public void workLinearly()
         {
             var input = CreateBigString();
-            
+
             var timer = new Stopwatch();
             timer.Start();
             var builder = new MdTreeBuilder(input);
             builder.BuildTree();
             timer.Stop();
 
-            Assert.That(timer.ElapsedMilliseconds,Is.LessThan(1000));
-
+            Assert.That(timer.ElapsedMilliseconds, Is.LessThan(1000));
         }
     }
 }

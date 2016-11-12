@@ -1,5 +1,4 @@
-﻿
-namespace Markdown
+﻿namespace Markdown
 {
     public interface IMdTreeConverter<T>
     {
