@@ -1,5 +1,7 @@
 ﻿using System.CodeDom;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 using FluentAssertions;
 using Markdown.Tags;
 using NUnit.Framework;
@@ -19,9 +21,9 @@ namespace Markdown.Tests
         public void createMdNodeWithoutInnerTags(string input, MdNode expectedMdNode)
         {
             var builder = new MdTreeBuilder(input);
-            var mdNode = builder.GetMdNode();
+            var root = builder.BuildTree();
 
-            Assert.That(mdNode, Is.EqualTo(expectedMdNode));
+            root.InnerMdNodes[0].ShouldBeEquivalentTo(expectedMdNode);
         }
 
 
@@ -35,9 +37,9 @@ namespace Markdown.Tests
         public void createMdNodeWithInnerTag(string input, MdNode expectedInnerMdNode)
         {
             var builder = new MdTreeBuilder(input);
-            var mdNode = builder.GetMdNode();
+            var mdNode = builder.BuildTree().InnerMdNodes[0];
 
-            Assert.That(mdNode.InnerMdNodes[0], Is.EqualTo(expectedInnerMdNode));
+            mdNode.InnerMdNodes.ShouldAllBeEquivalentTo(expectedInnerMdNode);
         }
 
         private static readonly TestCaseData[] MdNodeWithInnerTagsCase =
@@ -59,13 +61,36 @@ namespace Markdown.Tests
         void createMdNodeWithInnerTags(string input, MdNode expectedInnerMdNode)
         {
             var builder = new MdTreeBuilder(input);
-            var mdNode = builder.GetMdNode();
+            var mdNode = builder.BuildTree();
+
+            mdNode.InnerMdNodes.ShouldAllBeEquivalentTo(expectedInnerMdNode);
+        }
 
 
-            mdNode.InnerMdNodes.ShouldBeEquivalentTo
-                (
-                    expectedInnerMdNode
-                );
+        private string CreateBigString()
+        {
+            var line = "__text _text_ text _text_ text _text_ __";
+            var result = new StringBuilder();
+            for (var i = 0; i < 100; i++)
+            {
+                result.Append(line);
+            }
+            return result.ToString();
+        }
+
+        [Test]
+        public void workLinearly()
+        {
+            var input = CreateBigString();
+            
+            var timer = new Stopwatch();
+            timer.Start();
+            var builder = new MdTreeBuilder(input);
+            builder.BuildTree();
+            timer.Stop();
+
+            Assert.That(timer.ElapsedMilliseconds,Is.LessThan(1000));
+
         }
     }
 }

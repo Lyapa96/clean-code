@@ -48,7 +48,7 @@ namespace Markdown.Tests
         public string wrapMdNodeInHtml(MdNode mdNode)
         {
             var htmlWrapper = new HtmlWrapper();
-            return htmlWrapper.WrapInTags(mdNode);
+            return htmlWrapper.WrapMdTree(mdNode);
         }
 
         private static readonly TestCaseData[] MdNodeInnerNodeCase =
@@ -65,7 +65,7 @@ namespace Markdown.Tests
             mdNode.InnerMdNodes.Add(new MdNode("text", new EmptyTag()));
             mdNode.InnerMdNodes.Add(new MdNode("b", new UnderscoreTag()));
 
-            return htmlWrapper.WrapInTags(mdNode);
+            return htmlWrapper.WrapMdTree(mdNode);
         }
     }
 }

@@ -7,9 +7,10 @@ namespace Markdown
     {
         public static string Render(string mdText)
         {
-            var tokenizer = new MdTreeBuilder(mdText);
-            return tokenizer.GetHtmlText();
-
+            var builder = new MdTreeBuilder(mdText);
+            var htmlWrapper = new HtmlWrapper();
+            var root = builder.BuildTree();
+            return htmlWrapper.WrapMdTree(root);
         }
     }
 }

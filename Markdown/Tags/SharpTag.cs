@@ -13,7 +13,7 @@ namespace Markdown.Tags
             while (true)
             {
                 position++;
-                if (position == line.Length) return position;                
+                if (position == line.Length) return position;
                 if (IsStartedPositionTagEnd(line, position))
                     return position;
             }
@@ -30,7 +30,7 @@ namespace Markdown.Tags
         public override bool IsStartedPositionTagEnd(string line, int position)
         {
             return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
-                  TagHelper.IsNotTagEscaped(line, position); 
-        }        
+                   TagHelper.IsNotTagEscaped(line, position);
+        }
     }
 }

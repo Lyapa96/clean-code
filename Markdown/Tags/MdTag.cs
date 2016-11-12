@@ -1,9 +1,6 @@
-﻿
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using NUnit.Framework;
+﻿using System.Collections.Generic;
 
-namespace Markdown
+namespace Markdown.Tags
 {
     public abstract class MdTag
     {
@@ -23,13 +20,8 @@ namespace Markdown
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-            
-
             var other = obj as MdTag;
+            if (other == null) return false;
             return TagName.Equals(other.TagName);
         }
 

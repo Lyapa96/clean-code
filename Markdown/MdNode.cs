@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Markdown.Tags;
 
 namespace Markdown
 {
@@ -25,12 +26,8 @@ namespace Markdown
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
             var other = obj as MdNode;
-            
+            if (other == null) return false;
             return Context.Equals(other.Context) && Equals(MdTag, other.MdTag) &&
                    !InnerMdNodes.Except(other.InnerMdNodes).Any();
         }

@@ -16,7 +16,7 @@ namespace Markdown.Tags
             {
                 position++;
                 if (position == line.Length) return position;
-                if (Char.IsDigit(line, position)) return start;
+                if (char.IsDigit(line, position)) return start;
                 if (IsStartedPositionTagEnd(line, position))
                     return position;
             }

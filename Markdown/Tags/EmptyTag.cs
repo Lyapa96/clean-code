@@ -5,6 +5,8 @@ namespace Markdown.Tags
 {
     public class EmptyTag : MdTag
     {
+        private static readonly string[] BeginningTags = new[] {"_", "#"};
+
         public EmptyTag() : base("", new List<MdTag>())
         {
         }
@@ -27,7 +29,7 @@ namespace Markdown.Tags
         public override bool IsStartedPositionTagEnd(string line, int position)
         {
             if (++position >= line.Length) return true;
-            return (IsStartNewTag(line, position));
+            return IsStartNewTag(line, position);
         }
 
         private bool IsStartNewTag(string line, int position)
@@ -36,27 +38,19 @@ namespace Markdown.Tags
             {
                 return false;
             }
-            return (TagHelper.IsSubstringEqualTag(line, position, "_") ||
-                    TagHelper.IsSubstringEqualTag(line, position, "#"))
+            return IsSubstringEqualTag(line, position)
                    && TagHelper.IsNotTagEscaped(line, position)
                    && !line[position + 1].ToString().Equals(@" ");
         }
 
-
-        //public override bool Equals(object obj)
-        //{
-        //    if (obj == null)
-        //    {
-        //        return false;
-        //    }
-
-        //    var other = obj as EmptyTag;
-        //    return TagName.Equals(other.TagName);
-        //}
-
-        //public override int GetHashCode()
-        //{
-        //    return TagName.GetHashCode();
-        //}
+        private bool IsSubstringEqualTag(string line, int position)
+        {
+            foreach (var beginning in BeginningTags)
+            {
+                if (TagHelper.IsSubstringEqualTag(line, position, beginning))
+                    return true;
+            }
+            return false;
+        }
     }
 }

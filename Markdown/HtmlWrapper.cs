@@ -10,9 +10,10 @@ namespace Markdown
 {
     public class HtmlWrapper
     {
-        private Dictionary<string, HtmlTags> MdToHtml = new Dictionary<string, HtmlTags>()
+        private readonly Dictionary<string, HtmlTags> mdToHtml = new Dictionary<string, HtmlTags>()
         {
             {"__", new HtmlTags("<strong>", @"</strong>")},
+            {"##", new HtmlTags("<strong>", @"</strong>")},
             {"_", new HtmlTags("<em>", @"</em>")},
             {"#", new HtmlTags("<em>", @"</em>")},
             {"", new HtmlTags("", "")}
@@ -20,7 +21,7 @@ namespace Markdown
 
         public string WrapInTags(string words, string tag)
         {
-            var htmlTag = MdToHtml[tag];
+            var htmlTag = mdToHtml[tag];
             return $"{htmlTag.StartTag}{GetStringWithoutMdTag(words, tag)}{htmlTag.EndTag}";
         }
 
@@ -34,24 +35,21 @@ namespace Markdown
             return beforeContent + html + afterContent;
         }
 
-        public string WrapInTags(MdNode mdNode)
+        public string WrapMdTree(MdNode mdNode)
         {
             var result = new StringBuilder();
-            if (!mdNode.InnerMdNodes.Any())
-            {
-                return WrapMdNode(mdNode.Context, mdNode.MdTag.TagName);
-            }
 
             foreach (var innerNode in mdNode.InnerMdNodes)
             {
-                result.Append(WrapMdNode(innerNode.Context, innerNode.MdTag.TagName));
+                result.Append(WrapMdTree(innerNode));
             }
+            result.Append(mdNode.Context);
             return WrapMdNode(result.ToString(), mdNode.MdTag.TagName);
         }
 
-        public string WrapMdNode(string words, string tag)
+        private string WrapMdNode(string words, string tag)
         {
-            var htmlTag = MdToHtml[tag];
+            var htmlTag = mdToHtml[tag];
             return $"{htmlTag.StartTag}{words}{htmlTag.EndTag}";
         }
 

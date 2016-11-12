@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Markdown.Tags
 {
-    public class DoubleUnderscoreTag : MdTag
+    public class DoubleSharpTag : MdTag
     {
-        public DoubleUnderscoreTag() : base("__", new List<MdTag>() {new UnderscoreTag()})
+        public DoubleSharpTag() : base("##", new List<MdTag>() {new SharpTag()})
         {
         }
 
