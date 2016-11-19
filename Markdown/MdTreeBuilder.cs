@@ -17,6 +17,7 @@ namespace Markdown
             new DoubleUnderscoreTag(),
             new UnderscoreTag(),
             new SharpTag(),
+            new HyperlinkTag()
         };
 
         public MdTreeBuilder(string sourceString)

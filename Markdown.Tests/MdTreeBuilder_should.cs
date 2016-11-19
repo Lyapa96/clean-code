@@ -65,6 +65,24 @@ namespace Markdown.Tests
             tree.Root.InnerMdNodes.ShouldAllBeEquivalentTo(expectedInnerMdNode);
         }
 
+        private static readonly TestCaseData[] MdNodeWithHyperlinkTagsCase =
+        {
+            new TestCaseData(@"[This link](http://example.net/)", new MdNode(@"This link](http://example.net/", new HyperlinkTag())),
+            new TestCaseData(@"[text)](http://example.net/)", new MdNode(@"text)](http://example.net/", new HyperlinkTag())),
+            new TestCaseData(@"[text(http://example.net/)", new MdNode(@"[text(http://example.net/)", new EmptyTag())),
+            new TestCaseData(@"[text(]http://example.net/)", new MdNode(@"[text(]http://example.net/)", new EmptyTag())),
+        };
+
+        [TestCaseSource(nameof(MdNodeWithHyperlinkTagsCase))]
+        public void createMdNodeWithHyperlink(string input, MdNode expectedMdNode)
+        {
+            var builder = new MdTreeBuilder(input);
+            var tree = builder.BuildTree();
+
+            tree.Root.InnerMdNodes[0].ShouldBeEquivalentTo(expectedMdNode);
+        }
+        
+
 
         private string CreateBigString()
         {

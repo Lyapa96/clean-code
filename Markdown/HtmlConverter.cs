@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
+using Markdown.Tags;
 
 
 namespace Markdown
@@ -15,6 +17,17 @@ namespace Markdown
             {"", new HtmlTags("", "")}
         };
 
+        private readonly string basicUri;
+
+        public HtmlConverter(string basicUri)
+        {
+            this.basicUri = basicUri;
+        }
+
+        public HtmlConverter()
+        {
+        }
+
         public string Convert(MdTree tree)
         {
             var root = tree.Root;
@@ -29,7 +42,11 @@ namespace Markdown
             {
                 result.Append(WrapMdNode(innerNode));
             }
-            result.Append(mdNode.Context);
+            result.Append(mdNode.Content);
+            if (mdNode.MdTag is HyperlinkTag)
+            {
+                return WrapMdNodeWithHyperlinkTag(mdNode);
+            }
             return WrapMdNodeWithoutInnerTag(result.ToString(), mdNode.MdTag.TagName);
         }
 
@@ -38,6 +55,22 @@ namespace Markdown
             var htmlTag = mdToHtml[tag];
             return $"{htmlTag.StartTag}{words}{htmlTag.EndTag}";
         }
-       
+
+        private string WrapMdNodeWithHyperlinkTag(MdNode mdNode)
+        {
+            var index = mdNode.Content.IndexOf("](", StringComparison.Ordinal);
+            var text = mdNode.Content.Substring(0, index);
+            var href = mdNode.Content.Substring(index+2);
+            if (IsRelativePath(href))
+            {
+                href = basicUri + href;
+            }
+            return $"<a href=\"{href}\">{text}</a>";
+        }
+
+        private bool IsRelativePath(string href)
+        {
+            return href[0]== '/';
+        }
     }
 }

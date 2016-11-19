@@ -58,7 +58,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="HtmlWrapper_should.cs" />
+    <Compile Include="HtmlConverter_should.cs" />
     <Compile Include="Markdown_should.cs" />
     <Compile Include="MdTreeBuilder_should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

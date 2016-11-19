@@ -1,15 +1,17 @@
-﻿using Markdown.Tags;
+﻿using FluentAssertions;
+using Markdown.Tags;
 using NUnit.Framework;
 
 namespace Markdown.Tests
 {
-    public class HtmlWrapper_should
+    public class HtmlConverter_should
     {
         private static readonly TestCaseData[] MdNodeCase =
         {
             new TestCaseData(new MdNode("text", new DoubleUnderscoreTag())).Returns("<strong>text</strong>"),
             new TestCaseData(new MdNode("text", new UnderscoreTag())).Returns("<em>text</em>"),
             new TestCaseData(new MdNode("text", new EmptyTag())).Returns("text"),
+            new TestCaseData(new MdNode("This link](http://example.net/", new HyperlinkTag())).Returns($"<a href=\"http://example.net/\">This link</a>"),
         };
 
 
@@ -37,6 +39,16 @@ namespace Markdown.Tests
             mdNode.InnerMdNodes.Add(new MdNode("b", new UnderscoreTag()));
             var tree = new MdTree(mdNode);
             return htmlConverter.Convert(tree);
+        }
+
+        [Test]
+        public void createHtmlHyperlinkWithRelativePath()
+        {
+            var htmlConverter = new HtmlConverter(@"http://test.ru/");
+            var tree = new MdTree(new MdNode("test](/img",new HyperlinkTag()));
+            var html = htmlConverter.Convert(tree);
+
+            html.ShouldBeEquivalentTo($"<a href=\"http://test.ru//img\">test</a>");
         }
     }
 }
