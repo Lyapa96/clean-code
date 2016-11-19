@@ -3,6 +3,7 @@
     public class Md
     {
         public static string BasicUri => @"http://example.net/";
+        public static string CssClassName => "md";
 
         public static string Render(string mdText)
         {

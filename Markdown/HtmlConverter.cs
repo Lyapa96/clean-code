@@ -18,10 +18,18 @@ namespace Markdown
         };
 
         private readonly string basicUri;
+        private readonly string cssClassName;
+        private string cssClass => (cssClassName != null) ? $" class=\"{cssClassName}\"" : "";
 
         public HtmlConverter(string basicUri)
         {
             this.basicUri = basicUri;
+        }
+
+        public HtmlConverter(string basicUri, string cssClassName)
+        {
+            this.basicUri = basicUri;
+            this.cssClassName = cssClassName;
         }
 
         public HtmlConverter()
@@ -53,7 +61,13 @@ namespace Markdown
         private string WrapMdNodeWithoutInnerTag(string words, string tag)
         {
             var htmlTag = mdToHtml[tag];
-            return $"{htmlTag.StartTag}{words}{htmlTag.EndTag}";
+            var startTag = htmlTag.StartTag;
+            var endTag = htmlTag.EndTag;
+            if (cssClassName != null && startTag!="")
+            {
+                startTag = startTag.Insert(startTag.Length-1, cssClass);
+            }
+            return $"{startTag}{words}{endTag}";
         }
 
         private string WrapMdNodeWithHyperlinkTag(MdNode mdNode)
@@ -65,7 +79,7 @@ namespace Markdown
             {
                 href = basicUri + href;
             }
-            return $"<a href=\"{href}\">{text}</a>";
+            return $"<a{cssClass} href=\"{href}\">{text}</a>";
         }
 
         private bool IsRelativePath(string href)

@@ -42,13 +42,31 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void createHtmlHyperlinkWithRelativePath()
+        public void createHtmlHyperlinkWithAbsolutePathWhenInMdNodeInstalledRelativePath()
         {
             var htmlConverter = new HtmlConverter(@"http://test.ru/");
             var tree = new MdTree(new MdNode("test](/img",new HyperlinkTag()));
             var html = htmlConverter.Convert(tree);
 
             html.ShouldBeEquivalentTo($"<a href=\"http://test.ru//img\">test</a>");
+        }
+
+
+        private static readonly TestCaseData[] CssClassNameCase =
+{
+            new TestCaseData(new MdNode("text", new DoubleUnderscoreTag())).Returns("<strong class=\"mdClass\">text</strong>"),
+            new TestCaseData(new MdNode("text", new UnderscoreTag())).Returns("<em class=\"mdClass\">text</em>"),
+            new TestCaseData(new MdNode("text", new EmptyTag())).Returns("text"),
+            new TestCaseData(new MdNode("This link](http://example.net/", new HyperlinkTag())).Returns($"<a class=\"mdClass\" href=\"http://example.net/\">This link</a>"),
+        };
+
+
+        [TestCaseSource(nameof(CssClassNameCase))]
+        public string createHtmlWithCssClass(MdNode mdNode)
+        {
+            var tree = new MdTree(mdNode);
+            var htmlConverter = new HtmlConverter(null,"mdClass");
+            return htmlConverter.Convert(tree);
         }
     }
 }
