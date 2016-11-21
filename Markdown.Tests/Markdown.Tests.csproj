@@ -61,6 +61,7 @@
     <Compile Include="HtmlConverter_should.cs" />
     <Compile Include="Markdown_should.cs" />
     <Compile Include="MdTreeBuilder_should.cs" />
+    <Compile Include="ParserTextToMdLine_should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

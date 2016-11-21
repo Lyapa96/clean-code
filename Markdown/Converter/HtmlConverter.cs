@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Markdown.Tags;
 
-
-namespace Markdown
+namespace Markdown.Converter
 {
     public class HtmlConverter : IMdTreeConverter<string>
     {
@@ -13,13 +12,14 @@ namespace Markdown
             {"__", new HtmlTags("<strong>", @"</strong>")},
             {"##", new HtmlTags("<h2>", @"</h2>")},
             {"_", new HtmlTags("<em>", @"</em>")},
-            {"#", new HtmlTags("<h1>", @"</h1>")},
+            {"# ", new HtmlTags("<h1>", @"</h1>")},
+            {"## ", new HtmlTags("<h2>", @"</h2>")},
             {"", new HtmlTags("", "")}
         };
 
         private readonly string basicUri;
         private readonly string cssClassName;
-        private string cssClass => (cssClassName != null) ? $" class=\"{cssClassName}\"" : "";
+        private string cssClass => cssClassName != null ? $" class=\"{cssClassName}\"" : "";
 
         public HtmlConverter(string basicUri)
         {
@@ -63,9 +63,9 @@ namespace Markdown
             var htmlTag = mdToHtml[tag];
             var startTag = htmlTag.StartTag;
             var endTag = htmlTag.EndTag;
-            if (cssClassName != null && startTag!="")
+            if (cssClassName != null && startTag != "")
             {
-                startTag = startTag.Insert(startTag.Length-1, cssClass);
+                startTag = startTag.Insert(startTag.Length - 1, cssClass);
             }
             return $"{startTag}{words}{endTag}";
         }
@@ -74,7 +74,7 @@ namespace Markdown
         {
             var index = mdNode.Content.IndexOf("](", StringComparison.Ordinal);
             var text = mdNode.Content.Substring(0, index);
-            var href = mdNode.Content.Substring(index+2);
+            var href = mdNode.Content.Substring(index + 2);
             if (IsRelativePath(href))
             {
                 href = basicUri + href;
@@ -84,7 +84,7 @@ namespace Markdown
 
         private bool IsRelativePath(string href)
         {
-            return href[0]== '/';
+            return href[0] == '/';
         }
     }
 }

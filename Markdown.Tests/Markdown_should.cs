@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace Markdown.Tests
 {
@@ -7,13 +8,12 @@ namespace Markdown.Tests
         private static readonly TestCaseData[] TwoWordsCase =
         {
             new TestCaseData("a _b_").Returns("a <em>b</em>"),
-            new TestCaseData("a #b#").Returns("a <h1>b</h1>"),
+            new TestCaseData("# H1").Returns("<h1>H1</h1>"),
             new TestCaseData("_a__b_").Returns("<em>a</em><em>b</em>"),
-            new TestCaseData("#a##b#").Returns("<h1>a</h1><h1>b</h1>"),
+            new TestCaseData("# a##b#").Returns("<h1>a##b#</h1>"),
             new TestCaseData("a __b__").Returns("a <strong>b</strong>"),
             new TestCaseData("__a__b").Returns("<strong>a</strong>b"),
-            new TestCaseData("a ##b##").Returns("a <h2>b</h2>"),
-            new TestCaseData("##a##b").Returns("<h2>a</h2>b")
+            new TestCaseData("## aaabbb").Returns("<h2>aaabbb</h2>")
         };
 
         [TestCaseSource(nameof(TwoWordsCase))]
@@ -26,11 +26,9 @@ namespace Markdown.Tests
         private static readonly TestCaseData[] ThreeWordsCaseMd =
         {
             new TestCaseData("a _b_ c").Returns("a <em>b</em> c"),
-            new TestCaseData("a #b# c").Returns("a <h1>b</h1> c"),
-            new TestCaseData("a ##b##_c_").Returns("a <h2>b</h2><em>c</em>"),
+            new TestCaseData("# _H1_").Returns("<h1><em>H1</em></h1>"),
             new TestCaseData("a __b___c_").Returns("a <strong>b</strong><em>c</em>"),
             new TestCaseData("a _b___c__").Returns("a <em>b</em><strong>c</strong>"),
-            new TestCaseData("a #b#__c__").Returns("a <h1>b</h1><strong>c</strong>")
         };
 
         [TestCaseSource(nameof(ThreeWordsCaseMd))]
@@ -135,6 +133,41 @@ namespace Markdown.Tests
         public string createHtml(string input)
         {
             return Md.Render(input);
+        }
+
+
+        private static readonly TestCaseData[] TextMdCase =
+        {
+            new TestCaseData(new List<string>()
+            {
+                "a _b_ c",
+                "       ",
+                "c _b_ a",
+            }).Returns("a <em>b</em> c\r\nc <em>b</em> a\r\n"),
+            new TestCaseData(new List<string>()
+            {
+                "         ",
+                "a __b__ c",
+                "       ",
+                "       ",
+                "c _b_ a",
+            }).Returns("a <strong>b</strong> c\r\nc <em>b</em> a\r\n"),
+            new TestCaseData(new List<string>()
+            {
+                "         ",
+                "text",
+                "text",
+                "## Header2",
+                "         ",
+                "c _b_ a",
+                "# Header1",
+            }).Returns("text text\r\n<h2>Header2</h2>\r\nc <em>b</em> a\r\n<h1>Header1</h1>\r\n"),
+        };
+
+        [TestCaseSource(nameof(TextMdCase))]
+        public string createHtmlText(List<string> input)
+        {
+            return Md.Render(input.ToArray());
         }
     }
 }

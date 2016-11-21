@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using FluentAssertions;
+using Markdown.MdLines;
 using Markdown.Tags;
 using NUnit.Framework;
 
@@ -13,7 +14,6 @@ namespace Markdown.Tests
         {
             new TestCaseData("a b c", new MdNode("a b c", new EmptyTag())),
             new TestCaseData("_a_", new MdNode("a", new UnderscoreTag())),
-            new TestCaseData("#a#", new MdNode("a", new SharpTag())),
         };
 
         [TestCaseSource(nameof(MdNodeWithoutInnerTagsCase))]
@@ -52,7 +52,14 @@ namespace Markdown.Tests
                         new MdNode("text", new EmptyTag()),
                         new MdNode("abc", new UnderscoreTag())
                     }
-                })
+                }),
+            new TestCaseData("# a", new MdNode("", new SharpTag())
+            {
+                InnerMdNodes = new List<MdNode>()
+                {
+                    new MdNode("a", new EmptyTag())
+                },
+            }),
         };
 
         [TestCaseSource(nameof(MdNodeWithInnerTagsCase))]
@@ -67,8 +74,10 @@ namespace Markdown.Tests
 
         private static readonly TestCaseData[] MdNodeWithHyperlinkTagsCase =
         {
-            new TestCaseData(@"[This link](http://example.net/)", new MdNode(@"This link](http://example.net/", new HyperlinkTag())),
-            new TestCaseData(@"[text)](http://example.net/)", new MdNode(@"text)](http://example.net/", new HyperlinkTag())),
+            new TestCaseData(@"[This link](http://example.net/)",
+                new MdNode(@"This link](http://example.net/", new HyperlinkTag())),
+            new TestCaseData(@"[text)](http://example.net/)",
+                new MdNode(@"text)](http://example.net/", new HyperlinkTag())),
             new TestCaseData(@"[text(http://example.net/)", new MdNode(@"[text(http://example.net/)", new EmptyTag())),
             new TestCaseData(@"[text(]http://example.net/)", new MdNode(@"[text(]http://example.net/)", new EmptyTag())),
         };
@@ -81,8 +90,37 @@ namespace Markdown.Tests
 
             tree.Root.InnerMdNodes[0].ShouldBeEquivalentTo(expectedMdNode);
         }
-        
 
+        private static readonly TestCaseData[] MdLineCase =
+        {
+            new TestCaseData(new TextLine("a b c"), new MdNode("a b c", new EmptyTag())),
+            new TestCaseData(new TextLine("_a_"), new MdNode("a", new UnderscoreTag())),
+        };
+
+        [TestCaseSource(nameof(MdLineCase))]
+        public void createMdTreeFromMdLine(MdLine input, MdNode expectedMdNode)
+        {
+            var builder = new MdTreeBuilder(input);
+            var tree = builder.BuildTree();
+
+            tree.Root.InnerMdNodes[0].ShouldBeEquivalentTo(expectedMdNode);
+        }
+
+
+        private static readonly TestCaseData[] MdLineWithInnerTagCase =
+        {
+            new TestCaseData(new TextLine("## H2"), new MdNode("H2", new UnderscoreTag())),
+            new TestCaseData(new TextLine("# H1"), new MdNode("H1", new UnderscoreTag())),
+        };
+
+        [TestCaseSource(nameof(MdLineWithInnerTagCase))]
+        public void createMdNodeWithInnerTagFromMdLine(MdLine input, MdNode expectedInnerMdNode)
+        {
+            var builder = new MdTreeBuilder(input);
+            var mdNode = builder.BuildTree().Root.InnerMdNodes[0];
+
+            mdNode.InnerMdNodes.ShouldAllBeEquivalentTo(expectedInnerMdNode);
+        }
 
         private string CreateBigString()
         {

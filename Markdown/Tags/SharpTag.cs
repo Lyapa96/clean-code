@@ -4,7 +4,7 @@ namespace Markdown.Tags
 {
     public class SharpTag : MdTag
     {
-        public SharpTag() : base("#", new List<MdTag>())
+        public SharpTag() : base("# ", new List<MdTag>() { new UnderscoreTag(),new DoubleUnderscoreTag()})
         {
         }
 
@@ -13,7 +13,6 @@ namespace Markdown.Tags
             while (true)
             {
                 position++;
-                if (position == line.Length) return position;
                 if (IsStartedPositionTagEnd(line, position))
                     return position;
             }
@@ -22,15 +21,13 @@ namespace Markdown.Tags
         public override bool IsStartedPositionTagStart(string line, int position)
         {
             if (position == line.Length - 1) return false;
-            return TagHelper.IsNotTagEscaped(line, position) &&
-                   TagHelper.IsSubstringEqualTag(line, position, TagName) &&
-                   !line[position + 1].ToString().Equals(@"#");
+            return position==0 &&
+                   TagHelper.IsSubstringEqualTag(line, position, TagName);
         }
 
         public override bool IsStartedPositionTagEnd(string line, int position)
         {
-            return TagHelper.IsSubstringEqualTag(line, position, TagName) &&
-                   TagHelper.IsNotTagEscaped(line, position);
+            return (position == line.Length);
         }
     }
 }

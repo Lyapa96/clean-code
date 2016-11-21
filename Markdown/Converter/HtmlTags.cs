@@ -1,4 +1,4 @@
-﻿namespace Markdown
+﻿namespace Markdown.Converter
 {
     public class HtmlTags
     {

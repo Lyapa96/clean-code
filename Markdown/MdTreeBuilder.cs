@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Markdown.MdLines;
 using Markdown.Tags;
 
 namespace Markdown
@@ -24,6 +25,20 @@ namespace Markdown
         {
             this.sourceString = sourceString;
             currentMdTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, supportedMdTags);
+        }
+
+        public MdTreeBuilder(MdLine mdLine)
+        {
+            sourceString = mdLine.Content;
+            supportedMdTags = mdLine.SupportedMdTags;
+            if (mdLine is HeaderLine)
+            {
+                currentMdTag = (mdLine as HeaderLine).HeaderTag;
+            }
+            else
+            {
+                currentMdTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, supportedMdTags);
+            }
         }
 
 
@@ -133,7 +148,8 @@ namespace Markdown
         private bool IsTagСorrectlyClosed(int start)
         {
             return start != currentPosition - currentMdTag.TagName.Length &&
-                   currentMdTag.IsStartedPositionTagEnd(sourceString, currentPosition - currentMdTag.TagName.Length);
+                   currentMdTag.IsStartedPositionTagEnd(sourceString, currentPosition - currentMdTag.TagName.Length) ||
+                   currentMdTag.IsStartedPositionTagEnd(sourceString, currentPosition);
         }
 
         private MdNode CreateRightMdNode(MdNode mdNodeWithInnerNodes)

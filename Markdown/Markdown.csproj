@@ -37,12 +37,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HtmlTags.cs" />
-    <Compile Include="HtmlConverter.cs" />
-    <Compile Include="IMdTreeConverter.cs" />
+    <Compile Include="Converter\HtmlTags.cs" />
+    <Compile Include="Converter\HtmlConverter.cs" />
+    <Compile Include="Converter\IMdTreeConverter.cs" />
+    <Compile Include="MdLines\HeaderLine.cs" />
+    <Compile Include="MdLines\TextLine.cs" />
     <Compile Include="MdNode.cs" />
     <Compile Include="MdTree.cs" />
     <Compile Include="MdTreeBuilder.cs" />
+    <Compile Include="MdLines\MdLine.cs" />
+    <Compile Include="ParserTextToMdLines.cs" />
     <Compile Include="Tags\DoubleSharpTag.cs" />
     <Compile Include="Tags\HyperlinkTag.cs" />
     <Compile Include="Tags\MdTag.cs" />
