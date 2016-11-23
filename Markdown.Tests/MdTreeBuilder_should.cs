@@ -95,6 +95,8 @@ namespace Markdown.Tests
         {
             new TestCaseData(new TextLine("a b c"), new MdNode("a b c", new EmptyTag())),
             new TestCaseData(new TextLine("_a_"), new MdNode("a", new UnderscoreTag())),
+            new TestCaseData(new CodeLine("    function{\r\nvar a = 1 + 2\r\n}"),
+                new MdNode("function{\r\nvar a = 1 + 2\r\n}", new CodeTag())),
         };
 
         [TestCaseSource(nameof(MdLineCase))]
@@ -109,8 +111,9 @@ namespace Markdown.Tests
 
         private static readonly TestCaseData[] MdLineWithInnerTagCase =
         {
-            new TestCaseData(new TextLine("## H2"), new MdNode("H2", new UnderscoreTag())),
-            new TestCaseData(new TextLine("# H1"), new MdNode("H1", new UnderscoreTag())),
+            new TestCaseData(new HeaderLine("## H2") {HeaderTag = new DoubleSharpTag()},
+                new MdNode("H2", new EmptyTag())),
+            new TestCaseData(new HeaderLine("# H1") {HeaderTag = new SharpTag()}, new MdNode("H1", new EmptyTag())),
         };
 
         [TestCaseSource(nameof(MdLineWithInnerTagCase))]

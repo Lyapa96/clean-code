@@ -12,6 +12,8 @@ namespace Markdown.Tests
             new TestCaseData(new MdNode("text", new DoubleUnderscoreTag())).Returns("<strong>text</strong>"),
             new TestCaseData(new MdNode("text", new UnderscoreTag())).Returns("<em>text</em>"),
             new TestCaseData(new MdNode("text", new EmptyTag())).Returns("text"),
+            new TestCaseData(new MdNode("function{\r\nvar a = 1 + 2\r\n}", new CodeTag())).Returns(
+                "<pre><code>function{\r\nvar a = 1 + 2\r\n}</code></pre>"),
             new TestCaseData(new MdNode("This link](http://example.net/", new HyperlinkTag())).Returns(
                 $"<a href=\"http://example.net/\">This link</a>"),
         };

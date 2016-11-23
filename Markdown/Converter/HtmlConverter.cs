@@ -14,7 +14,8 @@ namespace Markdown.Converter
             {"_", new HtmlTags("<em>", @"</em>")},
             {"# ", new HtmlTags("<h1>", @"</h1>")},
             {"## ", new HtmlTags("<h2>", @"</h2>")},
-            {"", new HtmlTags("", "")}
+            {"", new HtmlTags("", "")},
+            {"    ", new HtmlTags("<pre><code>", "</code></pre>")}
         };
 
         private readonly string basicUri;

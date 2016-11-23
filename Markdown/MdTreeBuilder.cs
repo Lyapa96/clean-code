@@ -31,14 +31,7 @@ namespace Markdown
         {
             sourceString = mdLine.Content;
             supportedMdTags = mdLine.SupportedMdTags;
-            if (mdLine is HeaderLine)
-            {
-                currentMdTag = (mdLine as HeaderLine).HeaderTag;
-            }
-            else
-            {
-                currentMdTag = TagHelper.DetermineCurrentTag(sourceString, currentPosition, supportedMdTags);
-            }
+            currentMdTag = MdLineHelper.DetermineCurrentTag(mdLine);
         }
 
 

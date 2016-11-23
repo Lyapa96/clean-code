@@ -162,6 +162,15 @@ namespace Markdown.Tests
                 "c _b_ a",
                 "# Header1",
             }).Returns("text text\r\n<h2>Header2</h2>\r\nc <em>b</em> a\r\n<h1>Header1</h1>\r\n"),
+            new TestCaseData(new List<string>()
+            {
+                "## Header2",
+                "         ",
+                "    function{",
+                "    var a = 1 + 2",
+                "    }",
+                "text",
+            }).Returns("<h2>Header2</h2>\r\n<pre><code>function{\r\nvar a = 1 + 2\r\n}</code></pre>\r\ntext\r\n"),
         };
 
         [TestCaseSource(nameof(TextMdCase))]

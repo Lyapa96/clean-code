@@ -6,7 +6,7 @@ namespace Markdown.MdLines
 {
     public abstract class MdLine
     {
-        public string Content { get; private set; }
+        public string Content { get; protected set; }
         public abstract List<MdTag> SupportedMdTags { get; }
 
         protected MdLine(string content)
@@ -18,7 +18,7 @@ namespace Markdown.MdLines
         {
         }
 
-        public void AddContent(string newLine)
+        public virtual void AddContent(string newLine)
         {
             var builder = new StringBuilder();
             if (Content != null)
@@ -27,7 +27,7 @@ namespace Markdown.MdLines
                 builder.Append(" ");
             }
             builder.Append(newLine);
-            
+
             Content = builder.ToString();
         }
 

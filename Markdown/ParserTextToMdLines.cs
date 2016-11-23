@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Net.Mime;
 using Markdown.MdLines;
-using Markdown.Tags;
+
 
 namespace Markdown
 {
@@ -9,13 +8,6 @@ namespace Markdown
     {
         public readonly string[] Text;
         public List<MdLine> MdLines = new List<MdLine>();
-
-        private readonly List<MdTag> headerTags = new List<MdTag>()
-        {
-            new DoubleSharpTag(),
-            new SharpTag()
-            
-        };
 
         public ParserTextToMdLines(string[] text)
         {
@@ -25,60 +17,37 @@ namespace Markdown
         public List<MdLine> CreateMdLines()
         {
             MdLines = new List<MdLine>();
-            var currentLine = new TextLine();
+            MdLine currentMdLine = new TextLine();
             foreach (var line in Text)
             {
-                if (IsHeaderLine(line))
+                if (MdLineHelper.IsCodeLine(line, currentMdLine))
                 {
-                    if (currentLine.Content == null)
-                    {
-                        var headerTag = TagHelper.DetermineCurrentTag(line, 0, headerTags);
-                        var headerLine = new HeaderLine(headerTag); 
-                        headerLine.AddContent(line);                     
-                        MdLines.Add(headerLine);
-                    }
-                    else
-                    {
-                        MdLines.Add(currentLine);
-                        var headerTag = TagHelper.DetermineCurrentTag(line, 0, headerTags);
-                        var headerLine = new HeaderLine(headerTag);
-                        headerLine.AddContent(line);
-                        MdLines.Add(headerLine);
-                    }
-                    currentLine = new TextLine();
+                    MdLineHelper.HandleCodeLine(ref currentMdLine, line, MdLines);
                     continue;
                 }
-                if (IsEmptyLine(line))
+                if (MdLineHelper.IsHeaderLine(line))
                 {
-                    if (currentLine.Content != null)
-                    {
-                        MdLines.Add(currentLine);
-                        currentLine = new TextLine();
-                    }
+                    MdLineHelper.HandleHeaderLine(ref currentMdLine, line, MdLines);
                     continue;
                 }
-                currentLine.AddContent(line);
+                if (MdLineHelper.IsEmptyLine(line))
+                {
+                    MdLineHelper.HandleEmptyLine(ref currentMdLine, line, MdLines);
+                    continue;
+                }
+                if (currentMdLine is CodeLine)
+                {
+                    MdLines.Add(currentMdLine);
+                    currentMdLine = new TextLine(line);
+                    continue;
+                }
+                currentMdLine.AddContent(line);
             }
-            if (currentLine.Content != null)
+            if (currentMdLine.Content != null)
             {
-                MdLines.Add(currentLine);
+                MdLines.Add(currentMdLine);
             }
             return MdLines;
-        }
-
-        private bool IsHeaderLine(string line)
-        {
-            foreach (var header in headerTags)
-            {
-                if (header.IsStartedPositionTagStart(line, 0))
-                    return true;
-            }
-            return false;
-        }
-
-        private static bool IsEmptyLine(string line)
-        {
-            return line.Trim().Length == 0;
         }
     }
 }
