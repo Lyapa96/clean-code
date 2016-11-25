@@ -4,23 +4,29 @@ namespace Markdown.Tags
 {
     public class ListItemTag : MdTag
     {
-        public ListItemTag() : base("1.", new List<MdTag>() { new UnderscoreTag(), new DoubleUnderscoreTag() })
+        public ListItemTag() : base("1. ", new List<MdTag>() {new UnderscoreTag(), new DoubleUnderscoreTag()})
         {
         }
 
         public override int FindTagEnd(string line, int position)
         {
-            throw new System.NotImplementedException();
+            while (true)
+            {
+                position++;
+                if (IsStartedPositionTagEnd(line, position))
+                    return position;
+            }
         }
 
         public override bool IsStartedPositionTagStart(string line, int position)
         {
-            throw new System.NotImplementedException();
+            if (position >= line.Length - 2) return false;
+            return (char.IsDigit(line, position) && line.Substring(position + 1, 2) == ". ");
         }
 
         public override bool IsStartedPositionTagEnd(string line, int position)
         {
-            throw new System.NotImplementedException();
+            return position == line.Length;
         }
     }
 }

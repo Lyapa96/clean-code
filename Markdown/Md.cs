@@ -6,7 +6,7 @@ namespace Markdown
     public class Md
     {
         public static string BasicUri => @"http://example.net/";
-        public static string CssClassName => "md";
+        public static CssProperties Css => new CssProperties() {ClassName = "md"};
 
         public static string Render(string mdText)
         {
@@ -23,11 +23,11 @@ namespace Markdown
             var mdLines = parser.CreateMdLines();
 
             var builder = new StringBuilder();
+            var htmlConverter = new HtmlConverter(BasicUri);
 
             foreach (var mdLine in mdLines)
             {
-                var treeBuilder = new MdTreeBuilder(mdLine);
-                var htmlConverter = new HtmlConverter(BasicUri);
+                var treeBuilder = new MdTreeBuilder(mdLine);                
                 var tree = treeBuilder.BuildTree();
                 builder.AppendLine(htmlConverter.Convert(tree));
             }

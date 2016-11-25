@@ -143,7 +143,7 @@ namespace Markdown.Tests
                 "a _b_ c",
                 "       ",
                 "c _b_ a",
-            }).Returns("a <em>b</em> c\r\nc <em>b</em> a\r\n"),
+            }).Returns("<p>a <em>b</em> c</p>\r\n<p>c <em>b</em> a</p>\r\n"),
             new TestCaseData(new List<string>()
             {
                 "         ",
@@ -151,7 +151,7 @@ namespace Markdown.Tests
                 "       ",
                 "       ",
                 "c _b_ a",
-            }).Returns("a <strong>b</strong> c\r\nc <em>b</em> a\r\n"),
+            }).Returns("<p>a <strong>b</strong> c</p>\r\n<p>c <em>b</em> a</p>\r\n"),
             new TestCaseData(new List<string>()
             {
                 "         ",
@@ -161,7 +161,7 @@ namespace Markdown.Tests
                 "         ",
                 "c _b_ a",
                 "# Header1",
-            }).Returns("text text\r\n<h2>Header2</h2>\r\nc <em>b</em> a\r\n<h1>Header1</h1>\r\n"),
+            }).Returns("<p>text text</p>\r\n<h2>Header2</h2>\r\n<p>c <em>b</em> a</p>\r\n<h1>Header1</h1>\r\n"),
             new TestCaseData(new List<string>()
             {
                 "## Header2",
@@ -170,7 +170,14 @@ namespace Markdown.Tests
                 "    var a = 1 + 2",
                 "    }",
                 "text",
-            }).Returns("<h2>Header2</h2>\r\n<pre><code>function{\r\nvar a = 1 + 2\r\n}</code></pre>\r\ntext\r\n"),
+            }).Returns("<h2>Header2</h2>\r\n<pre><code>function{\r\nvar a = 1 + 2\r\n}</code></pre>\r\n<p>text</p>\r\n"),
+            new TestCaseData(new List<string>()
+            {
+                "1. milk",
+                "2. coffee",
+                "3. cheese",
+                "text",
+            }).Returns("<ol><li>milk</li><li>coffee</li><li>cheese</li></ol>\r\n<p>text</p>\r\n")
         };
 
         [TestCaseSource(nameof(TextMdCase))]

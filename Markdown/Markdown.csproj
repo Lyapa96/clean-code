@@ -40,9 +40,11 @@
     <Compile Include="Converter\HtmlTags.cs" />
     <Compile Include="Converter\HtmlConverter.cs" />
     <Compile Include="Converter\IMdTreeConverter.cs" />
+    <Compile Include="CssProperties.cs" />
     <Compile Include="MdLineHelper.cs" />
     <Compile Include="MdLines\CodeLine.cs" />
     <Compile Include="MdLines\HeaderLine.cs" />
+    <Compile Include="MdLines\ListItemLine.cs" />
     <Compile Include="MdLines\OrderedListsLine.cs" />
     <Compile Include="MdLines\TextLine.cs" />
     <Compile Include="MdNode.cs" />
@@ -58,6 +60,7 @@
     <Compile Include="Tags\DoubleUnderscoreTag.cs" />
     <Compile Include="Tags\EmptyTag.cs" />
     <Compile Include="Tags\OrderListTag.cs" />
+    <Compile Include="Tags\ParagraphTag.cs" />
     <Compile Include="Tags\TagHelper.cs" />
     <Compile Include="Tags\SharpTag.cs" />
     <Compile Include="Tags\UnderscoreTag.cs" />

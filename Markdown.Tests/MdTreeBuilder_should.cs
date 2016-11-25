@@ -93,8 +93,16 @@ namespace Markdown.Tests
 
         private static readonly TestCaseData[] MdLineCase =
         {
-            new TestCaseData(new TextLine("a b c"), new MdNode("a b c", new EmptyTag())),
-            new TestCaseData(new TextLine("_a_"), new MdNode("a", new UnderscoreTag())),
+            new TestCaseData(new TextLine("a b c"),
+                new MdNode("", new ParagraphTag())
+                {
+                    InnerMdNodes = new List<MdNode>() {new MdNode("a b c", new EmptyTag())}
+                }),
+            new TestCaseData(new TextLine("_a_"),
+                new MdNode("", new ParagraphTag())
+                {
+                    InnerMdNodes = new List<MdNode>() {new MdNode("a", new UnderscoreTag())}
+                }),
             new TestCaseData(new CodeLine("    function{\r\nvar a = 1 + 2\r\n}"),
                 new MdNode("function{\r\nvar a = 1 + 2\r\n}", new CodeTag())),
         };

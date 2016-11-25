@@ -2,9 +2,10 @@
 
 namespace Markdown.Tags
 {
-    public class CodeTag : MdTag
+    public class ParagraphTag : MdTag
     {
-        public CodeTag() : base("    ", new List<MdTag>())
+        public ParagraphTag()
+            : base("", new List<MdTag>() {new HyperlinkTag(), new DoubleUnderscoreTag(), new UnderscoreTag()})
         {
         }
 
@@ -12,21 +13,20 @@ namespace Markdown.Tags
         {
             while (true)
             {
-                position++;
                 if (IsStartedPositionTagEnd(line, position))
                     return position;
+                position++;
             }
         }
 
         public override bool IsStartedPositionTagStart(string line, int position)
         {
-            if (position != 0) return false;
-            return TagHelper.IsSubstringEqualTag(line, 0, TagName);
+            return position == 0;
         }
 
         public override bool IsStartedPositionTagEnd(string line, int position)
         {
-            return position == line.Length - 1 + TagName.Length;
+            return position == line.Length;
         }
     }
 }

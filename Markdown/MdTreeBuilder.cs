@@ -9,6 +9,7 @@ namespace Markdown
         private MdTag currentMdTag;
         private int currentPosition;
         private int substringStartPosition;
+        private readonly MdLine currentMdLine;
 
         private readonly string sourceString;
 
@@ -29,6 +30,7 @@ namespace Markdown
 
         public MdTreeBuilder(MdLine mdLine)
         {
+            currentMdLine = mdLine;
             sourceString = mdLine.Content;
             supportedMdTags = mdLine.SupportedMdTags;
             currentMdTag = MdLineHelper.DetermineCurrentTag(mdLine);
@@ -37,10 +39,26 @@ namespace Markdown
 
         public MdTree BuildTree()
         {
+            if (currentMdLine is OrderedListsLine)
+            {
+                return BuildMdTreeForOrderedList();
+            }
             var mdNode = new MdNode(new EmptyTag());
             while (currentPosition < sourceString.Length)
             {
                 mdNode.InnerMdNodes.Add(GetMdNode());
+            }
+            return new MdTree(mdNode);
+        }
+
+        private MdTree BuildMdTreeForOrderedList()
+        {
+            var mdNode = new MdNode(new OrderListTag());
+            var orderedLists = currentMdLine as OrderedListsLine;
+            foreach (var textLine in orderedLists.GetListItems())
+            {
+                var builder = new MdTreeBuilder(textLine);
+                mdNode.InnerMdNodes.Add(builder.BuildTree().Root);
             }
             return new MdTree(mdNode);
         }

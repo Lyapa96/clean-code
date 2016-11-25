@@ -6,6 +6,8 @@ namespace Markdown.MdLines
 {
     public class CodeLine : MdLine
     {
+        private int codeTagLenght = 4;
+
         public CodeLine(string content) : base(content)
         {
         }
@@ -14,7 +16,9 @@ namespace Markdown.MdLines
 
         public override void AddContent(string newLine)
         {
-            newLine = (newLine.Length == 4 || newLine.Trim().Length == 0) ? "" : newLine.Substring(4);
+            newLine = (newLine.Length == codeTagLenght || newLine.Trim().Length == 0)
+                ? ""
+                : newLine.Substring(codeTagLenght);
             var builder = new StringBuilder();
             if (Content != null)
             {

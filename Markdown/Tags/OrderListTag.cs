@@ -4,23 +4,28 @@ namespace Markdown.Tags
 {
     public class OrderListTag : MdTag
     {
-        public OrderListTag() : base("1.", new List<MdTag>() {new ListItemTag()})
+        public OrderListTag() : base("", new List<MdTag>() {new ListItemTag()})
         {
         }
 
         public override int FindTagEnd(string line, int position)
         {
-            throw new System.NotImplementedException();
+            while (true)
+            {
+                if (IsStartedPositionTagEnd(line, position))
+                    return position;
+                position++;
+            }
         }
 
         public override bool IsStartedPositionTagStart(string line, int position)
         {
-            throw new System.NotImplementedException();
+            return position == 0;
         }
 
         public override bool IsStartedPositionTagEnd(string line, int position)
         {
-            throw new System.NotImplementedException();
+            return position == line.Length;
         }
     }
 }

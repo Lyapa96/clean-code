@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Markdown.MdLines;
 using NUnit.Framework;
 
 namespace Markdown.Tests
@@ -140,6 +141,35 @@ namespace Markdown.Tests
             var parser = new ParserTextToMdLines(text.ToArray());
             var mdLines = parser.CreateMdLines();
             return mdLines.Select(x => x.Content).ToList();
+        }
+
+
+        private static readonly TestCaseData[] OrderListCase =
+        {
+            new TestCaseData(new List<string>
+            {
+                "## H2",
+                "1. 1",
+                "1. 2",
+                "1. 3",
+                "    ",
+            }).Returns(new List<string>() {"1. 1", "1. 2", "1. 3"}),
+            new TestCaseData(new List<string>
+            {
+                "text",
+                "1. 1",
+                "1. 2",
+                "1. 3",
+                "text"
+            }).Returns(new List<string>() {"1. 1", "1. 2", "1. 3"}),
+        };
+
+        [TestCaseSource(nameof(OrderListCase))]
+        public List<string> createOrderListLine(List<string> text)
+        {
+            var parser = new ParserTextToMdLines(text.ToArray());
+            var mdLines = parser.CreateMdLines();
+            return (mdLines[1] as OrderedListsLine).GetListItems().Select(x => x.Content).ToList();
         }
     }
 }

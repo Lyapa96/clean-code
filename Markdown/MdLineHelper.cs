@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Markdown.MdLines;
 using Markdown.Tags;
 
@@ -6,11 +7,13 @@ namespace Markdown
 {
     public class MdLineHelper
     {
-        private static readonly List<MdTag> HeaderTags = new List<MdTag>()
+        private static readonly List<MdTag> headerTags = new List<MdTag>()
         {
             new DoubleSharpTag(),
             new SharpTag()
         };
+
+        private static readonly ListItemTag listItemTag = new ListItemTag();
 
         public static void HandleCodeLine(ref MdLine currentLine, string line, List<MdLine> mdLines)
         {
@@ -30,22 +33,37 @@ namespace Markdown
 
         public static void HandleHeaderLine(ref MdLine currentLine, string line, List<MdLine> mdLines)
         {
-            if (currentLine.Content == null)
+            if (currentLine.Content != null)
             {
-                var headerTag = TagHelper.DetermineCurrentTag(line, 0, HeaderTags);
-                var headerLine = new HeaderLine(headerTag);
-                headerLine.AddContent(line);
-                mdLines.Add(headerLine);
+                mdLines.Add(currentLine);
+            }
+            var headerTag = TagHelper.DetermineCurrentTag(line, 0, headerTags);
+            var headerLine = new HeaderLine(headerTag);
+            headerLine.AddContent(line);
+            mdLines.Add(headerLine);
+            currentLine = new TextLine();
+        }
+
+        public static void HandleOrderedListLine(ref MdLine currentLine, string line, List<MdLine> mdLines)
+        {
+            if (currentLine is OrderedListsLine)
+            {
+                currentLine.AddContent(line);
             }
             else
             {
-                mdLines.Add(currentLine);
-                var headerTag = TagHelper.DetermineCurrentTag(line, 0, HeaderTags);
-                var headerLine = new HeaderLine(headerTag);
-                headerLine.AddContent(line);
-                mdLines.Add(headerLine);
+                if (currentLine.Content != null)
+                {
+                    mdLines.Add(currentLine);
+                    currentLine = new OrderedListsLine();
+                    currentLine.AddContent(line);
+                }
+                else
+                {
+                    currentLine = new OrderedListsLine();
+                    currentLine.AddContent(line);
+                }
             }
-            currentLine = new TextLine();
         }
 
         public static void HandleEmptyLine(ref MdLine currentLine, string line, List<MdLine> mdLines)
@@ -60,6 +78,14 @@ namespace Markdown
 
         public static MdTag DetermineCurrentTag(MdLine mdLine)
         {
+            if (mdLine is ListItemLine)
+            {
+                return new ListItemTag();
+            }
+            if (mdLine is TextLine)
+            {
+                return new ParagraphTag();
+            }
             if (mdLine is HeaderLine)
             {
                 return (mdLine as HeaderLine).HeaderTag;
@@ -74,24 +100,25 @@ namespace Markdown
 
         public static bool IsHeaderLine(string line)
         {
-            foreach (var header in HeaderTags)
-            {
-                if (header.IsStartedPositionTagStart(line, 0))
-                    return true;
-            }
-            return false;
+            return headerTags.Any(header => header.IsStartedPositionTagStart(line, 0));
         }
 
         public static bool IsCodeLine(string line, MdLine currentLine)
         {
-            if (line.Length < 4) return false;
-            if (currentLine is CodeLine && line.Substring(0, 4) == "    ") return true;
-            return line.Substring(0, 4) == "    " && !IsEmptyLine(line);
+            var codeTag = new CodeTag();
+            if (line.Length < codeTag.TagName.Length) return false;
+            if (currentLine is CodeLine && TagHelper.IsSubstringEqualTag(line, 0, codeTag.TagName)) return true;
+            return TagHelper.IsSubstringEqualTag(line, 0, codeTag.TagName) && !IsEmptyLine(line);
         }
 
         public static bool IsEmptyLine(string line)
         {
             return line.Trim().Length == 0;
+        }
+
+        public static bool IsOrderedListLine(string line)
+        {
+            return listItemTag.IsStartedPositionTagStart(line, 0);
         }
     }
 }

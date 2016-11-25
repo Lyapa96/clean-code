@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Markdown.MdLines;
+using Markdown.Tags;
 
 
 namespace Markdown
@@ -25,6 +26,11 @@ namespace Markdown
                     MdLineHelper.HandleCodeLine(ref currentMdLine, line, MdLines);
                     continue;
                 }
+                if (MdLineHelper.IsOrderedListLine(line))
+                {
+                    MdLineHelper.HandleOrderedListLine(ref currentMdLine, line, MdLines);
+                    continue;
+                }
                 if (MdLineHelper.IsHeaderLine(line))
                 {
                     MdLineHelper.HandleHeaderLine(ref currentMdLine, line, MdLines);
@@ -35,7 +41,7 @@ namespace Markdown
                     MdLineHelper.HandleEmptyLine(ref currentMdLine, line, MdLines);
                     continue;
                 }
-                if (currentMdLine is CodeLine)
+                if (currentMdLine is CodeLine || currentMdLine is OrderedListsLine)
                 {
                     MdLines.Add(currentMdLine);
                     currentMdLine = new TextLine(line);
