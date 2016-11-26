@@ -30,10 +30,15 @@ namespace Markdown.Converter
             css = new CssProperties();
         }
 
-        public HtmlConverter(string basicUri, string cssClassName)
+        public HtmlConverter(string basicUri, CssProperties properties)
         {
             this.basicUri = basicUri;
-            css = new CssProperties() {ClassName = cssClassName};
+            css = properties;
+        }
+
+        public HtmlConverter(CssProperties properties)
+        {
+            css = properties;
         }
 
         public HtmlConverter()

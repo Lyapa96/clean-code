@@ -49,7 +49,7 @@ namespace Markdown.Tests
         }
 
         [Test]
-        public void createHtmlHyperlinkWithAbsolutePathWhenInMdNodeInstalledRelativePath()
+        public void createHtmlHyperlinkWithAbsolutePath()
         {
             var htmlConverter = new HtmlConverter(@"http://test.ru/");
             var tree = new MdTree(new MdNode("test](/img", new HyperlinkTag()));
@@ -74,7 +74,8 @@ namespace Markdown.Tests
         public string createHtmlWithCssClass(MdNode mdNode)
         {
             var tree = new MdTree(mdNode);
-            var htmlConverter = new HtmlConverter(null, "mdClass");
+            var properties = new CssProperties() {ClassName = "mdClass"};
+            var htmlConverter = new HtmlConverter(properties);
             return htmlConverter.Convert(tree);
         }
     }

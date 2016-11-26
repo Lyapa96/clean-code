@@ -10,9 +10,8 @@ namespace Markdown.MdLines
     {
         public override List<MdTag> SupportedMdTags => new List<MdTag>() {new OrderListTag()};
 
-
         public override void AddContent(string newLine)
-        {            
+        {
             var builder = new StringBuilder();
             if (Content != null)
             {
@@ -23,16 +22,12 @@ namespace Markdown.MdLines
             Content = builder.ToString();
         }
 
-
         public IEnumerable<MdLine> GetListItems()
         {
-            string[] separator = { Environment.NewLine };
-            var lines = Content.Split(separator, StringSplitOptions.RemoveEmptyEntries).Select( str => new ListItemLine(str));
+            string[] separator = {Environment.NewLine};
+            var lines =
+                Content.Split(separator, StringSplitOptions.RemoveEmptyEntries).Select(str => new ListItemLine(str));
             return lines;
-        } 
+        }
     }
-
-    
-
-    
 }

@@ -94,8 +94,7 @@ namespace Markdown.Tests
             new TestCaseData("_123_").Returns("_123_"),
             new TestCaseData("a_123_").Returns("a_123_"),
             new TestCaseData("a123_b_").Returns("a123<em>b</em>"),
-            new TestCaseData("a123_b1_").Returns("a123_b1_"),
-            //new TestCaseData("_a123_").Returns("<em>a123</em>"),
+            new TestCaseData("a123_b1_").Returns("a123_b1_")
         };
 
         [TestCaseSource(nameof(NumbersInTextCase))]
